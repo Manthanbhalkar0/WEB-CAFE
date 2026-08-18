@@ -13,22 +13,22 @@ import { fetchMenu, placeOrderApi } from "./api";
 
 // Used only if the backend API is unreachable, so the site still works standalone.
 const FALLBACK_MENU = [
-  { id: 1, category: "Brewed With Love", name: "Kopargaon Cold Brew", description: "18-hour steeped, served over ice", price: 140 },
-  { id: 2, category: "Brewed With Love", name: "Classic Cappuccino", description: "Double shot, hand-frothed milk", price: 130 },
-  { id: 3, category: "Brewed With Love", name: "Hazelnut Latte", description: "Espresso, steamed milk, roasted hazelnut", price: 160 },
-  { id: 4, category: "Brewed With Love", name: "Filter Kaapi", description: "South-Indian style, brass tumbler", price: 90 },
-  { id: 5, category: "Tea Leaves & Time", name: "Masala Chai", description: "Slow-simmered, hand-ground spices", price: 70 },
-  { id: 6, category: "Tea Leaves & Time", name: "Chamomile Bloom", description: "Whole flower infusion, honey on the side", price: 110 },
-  { id: 7, category: "Tea Leaves & Time", name: "Earl Grey Reader's Blend", description: "Bergamot, served with shortbread", price: 120 },
-  { id: 8, category: "Between The Pages", name: "Cheese Chilli Toast", description: "Grilled sourdough, jalapeño, cheddar", price: 150 },
-  { id: 9, category: "Between The Pages", name: "Peri Peri Fries", description: "Crisp fries, house peri seasoning", price: 120 },
-  { id: 10, category: "Between The Pages", name: "Veg Club Sandwich", description: "Triple-layered, herbed mayo", price: 170 },
-  { id: 11, category: "Between The Pages", name: "Paneer Tikki Wrap", description: "Grilled paneer, mint chutney, rolled fresh", price: 160 },
-  { id: 12, category: "Chapter Endings", name: "Molten Chocolate Cake", description: "Warm centre, vanilla bean scoop", price: 180 },
-  { id: 13, category: "Chapter Endings", name: "Biscoff Cheesecake", description: "No-bake, biscoff crumble top", price: 190 },
-  { id: 14, category: "Chapter Endings", name: "Classic Tiramisu", description: "Espresso-soaked, cocoa dusted", price: 200 },
-  { id: 15, category: "Reader's Specials", name: "The Bookworm's Mocha", description: "Signature — dark chocolate, espresso, sea salt", price: 175 },
-  { id: 16, category: "Reader's Specials", name: "Page-Turner Affogato", description: "Signature — vanilla gelato drowned in espresso", price: 165 },
+  { id: 1, category: "Brewed With Love", name: "Filter Coffee", description: "Strong South Indian filter coffee in a steel tumbler", price: 80 },
+  { id: 2, category: "Brewed With Love", name: "Elaichi Chai", description: "Fresh milk tea brewed with cardamom", price: 50 },
+  { id: 3, category: "Brewed With Love", name: "Masala Coffee", description: "House coffee with a light touch of warming spices", price: 95 },
+  { id: 4, category: "Brewed With Love", name: "Cold Coffee", description: "Chilled, creamy coffee topped with froth", price: 120 },
+  { id: 5, category: "Tea Leaves & Time", name: "Adrak Chai", description: "Ginger tea simmered slow for a bold cup", price: 55 },
+  { id: 6, category: "Tea Leaves & Time", name: "Kashmiri Kahwa", description: "Saffron green tea with almonds", price: 110 },
+  { id: 7, category: "Tea Leaves & Time", name: "Lemon Iced Tea", description: "Refreshing tea with lemon and mint", price: 90 },
+  { id: 8, category: "Between The Pages", name: "Paneer Kathi Roll", description: "Soft roll stuffed with spiced paneer and onions", price: 140 },
+  { id: 9, category: "Between The Pages", name: "Mumbai Veg Sandwich", description: "Grilled sandwich with chutney, veggies, and cheese", price: 130 },
+  { id: 10, category: "Between The Pages", name: "Samosa Chaat", description: "Crispy samosa topped with curd, chutneys, and sev", price: 110 },
+  { id: 11, category: "Between The Pages", name: "Pav Bhaji", description: "Butter-toasted pav served with rich bhaji", price: 150 },
+  { id: 12, category: "Chapter Endings", name: "Gulab Jamun", description: "Warm gulab jamun served with a scoop of vanilla ice cream", price: 90 },
+  { id: 13, category: "Chapter Endings", name: "Rasmalai", description: "Soft cottage cheese dumplings in chilled saffron milk", price: 110 },
+  { id: 14, category: "Chapter Endings", name: "Kulfi Falooda", description: "Traditional kulfi with falooda and rose syrup", price: 130 },
+  { id: 15, category: "Reader's Specials", name: "Tandoori Paneer Pizza", description: "Cafe-style pizza topped with tandoori paneer and capsicum", price: 220 },
+  { id: 16, category: "Reader's Specials", name: "Loaded Masala Fries", description: "Crispy fries tossed in desi masala and cheese", price: 140 },
 ];
 
 const GALLERY = [

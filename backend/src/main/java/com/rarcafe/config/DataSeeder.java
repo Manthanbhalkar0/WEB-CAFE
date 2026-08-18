@@ -19,26 +19,26 @@ public class DataSeeder implements CommandLineRunner {
         if (menuItemRepository.count() > 0) return;
 
         menuItemRepository.saveAll(java.util.List.of(
-            new MenuItem("Brewed With Love", "Kopargaon Cold Brew", "18-hour steeped, served over ice", 140.0),
-            new MenuItem("Brewed With Love", "Classic Cappuccino", "Double shot, hand-frothed milk", 130.0),
-            new MenuItem("Brewed With Love", "Hazelnut Latte", "Espresso, steamed milk, roasted hazelnut", 160.0),
-            new MenuItem("Brewed With Love", "Filter Kaapi", "South-Indian style, brass tumbler", 90.0),
+            new MenuItem("Brewed With Love", "Filter Coffee", "Strong South Indian filter coffee in a steel tumbler", 80.0),
+            new MenuItem("Brewed With Love", "Elaichi Chai", "Fresh milk tea brewed with cardamom", 50.0),
+            new MenuItem("Brewed With Love", "Masala Coffee", "House coffee with a light touch of warming spices", 95.0),
+            new MenuItem("Brewed With Love", "Cold Coffee", "Chilled, creamy coffee topped with froth", 120.0),
 
-            new MenuItem("Tea Leaves & Time", "Masala Chai", "Slow-simmered, hand-ground spices", 70.0),
-            new MenuItem("Tea Leaves & Time", "Chamomile Bloom", "Whole flower infusion, honey on the side", 110.0),
-            new MenuItem("Tea Leaves & Time", "Earl Grey Reader's Blend", "Bergamot, served with shortbread", 120.0),
+            new MenuItem("Tea Leaves & Time", "Adrak Chai", "Ginger tea simmered slow for a bold cup", 55.0),
+            new MenuItem("Tea Leaves & Time", "Kashmiri Kahwa", "Saffron green tea with almonds", 110.0),
+            new MenuItem("Tea Leaves & Time", "Lemon Iced Tea", "Refreshing tea with lemon and mint", 90.0),
 
-            new MenuItem("Between The Pages", "Cheese Chilli Toast", "Grilled sourdough, jalapeño, cheddar", 150.0),
-            new MenuItem("Between The Pages", "Peri Peri Fries", "Crisp fries, house peri seasoning", 120.0),
-            new MenuItem("Between The Pages", "Veg Club Sandwich", "Triple-layered, herbed mayo", 170.0),
-            new MenuItem("Between The Pages", "Paneer Tikki Wrap", "Grilled paneer, mint chutney, rolled fresh", 160.0),
+            new MenuItem("Between The Pages", "Paneer Kathi Roll", "Soft roll stuffed with spiced paneer and onions", 140.0),
+            new MenuItem("Between The Pages", "Mumbai Veg Sandwich", "Grilled sandwich with chutney, veggies, and cheese", 130.0),
+            new MenuItem("Between The Pages", "Samosa Chaat", "Crispy samosa topped with curd, chutneys, and sev", 110.0),
+            new MenuItem("Between The Pages", "Pav Bhaji", "Butter-toasted pav served with rich bhaji", 150.0),
 
-            new MenuItem("Chapter Endings", "Molten Chocolate Cake", "Warm centre, vanilla bean scoop", 180.0),
-            new MenuItem("Chapter Endings", "Biscoff Cheesecake", "No-bake, biscoff crumble top", 190.0),
-            new MenuItem("Chapter Endings", "Classic Tiramisu", "Espresso-soaked, cocoa dusted", 200.0),
+            new MenuItem("Chapter Endings", "Gulab Jamun", "Warm gulab jamun served with a scoop of vanilla ice cream", 90.0),
+            new MenuItem("Chapter Endings", "Rasmalai", "Soft cottage cheese dumplings in chilled saffron milk", 110.0),
+            new MenuItem("Chapter Endings", "Kulfi Falooda", "Traditional kulfi with falooda and rose syrup", 130.0),
 
-            new MenuItem("Reader's Specials", "The Bookworm's Mocha", "Signature — dark chocolate, espresso, sea salt", 175.0),
-            new MenuItem("Reader's Specials", "Page-Turner Affogato", "Signature — vanilla gelato drowned in espresso", 165.0)
+            new MenuItem("Reader's Specials", "Tandoori Paneer Pizza", "Cafe-style pizza topped with tandoori paneer and capsicum", 220.0),
+            new MenuItem("Reader's Specials", "Loaded Masala Fries", "Crispy fries tossed in desi masala and cheese", 140.0)
         ));
 
         System.out.println("Seeded Read & Roast menu with " + menuItemRepository.count() + " items.");
