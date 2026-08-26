@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cart — Cafe Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <a href="index.html" class="brand"><span class="cup">☕</span> Cafe Point</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="booking.html">Book a Table</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon-btn">🛒<span class="cart-badge">0</span></a>
+    <div id="authArea"></div>
+    <button class="nav-toggle" id="navToggle">☰</button>
+  </div>
+</nav>
+<div class="spacer-nav"></div>
+
+<section class="section" style="padding-top:30px;">
+  <div class="container">
+    <h2 class="section-title">Your Cart 🛒</h2>
+    <div class="grid grid-2" style="grid-template-columns: 1.6fr 1fr; gap:40px; align-items:start;">
+      <div id="cartList"></div>
+      <div class="cart-summary" id="cartSummary"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container footer-bottom">© 2026 Cafe Point. All rights reserved.</div></footer>
+
+<script src="js/api.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script>
+function renderCartPage() {
+  const cart = getCart();
+  const list = document.getElementById('cartList');
+  const summary = document.getElementById('cartSummary');
+
+  if (!cart.length) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">🛒</div><p>Your cart is empty.</p><a href="menu.html" class="btn btn-primary mt-20">Browse Menu</a></div>`;
+    summary.innerHTML = '';
+    return;
+  }
+
+  list.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="emoji-badge"><img src="${item.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&q=80'}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&q=80'"></div>
+      <div class="info">
+        <h4>${item.name}</h4>
+        <small>${formatMoney(item.price)} each</small>
+        <input type="text" placeholder="Special note for this item (e.g. less sugar, extra spicy)"
+               value="${item.note || ''}" style="margin-top:8px;font-size:13px;padding:8px 12px;"
+               onchange="setItemNote(${item.id}, this.value)">
+      </div>
+      <div class="qty-control">
+        <button onclick="changeQuantity(${item.id}, -1)">−</button>
+        <span>${item.quantity}</span>
+        <button onclick="changeQuantity(${item.id}, 1)">+</button>
+      </div>
+      <div style="min-width:80px;text-align:right;font-weight:700;">${formatMoney(item.price * item.quantity)}</div>
+      <button class="remove-btn" onclick="removeFromCart(${item.id})">✕</button>
+    </div>
+  `).join('');
+
+  const total = cartTotal();
+  summary.innerHTML = `
+    <h3 style="margin-bottom:20px;">Order Summary</h3>
+    <div class="summary-row"><span>Items (${cartCount()})</span><span>${formatMoney(total)}</span></div>
+    <div class="summary-row"><span>Delivery / Packing</span><span>Free</span></div>
+    <div class="summary-row total"><span>Total</span><span>${formatMoney(total)}</span></div>
+    <a href="checkout.html" class="btn btn-primary btn-block mt-20">Proceed to Checkout →</a>
+    <a href="menu.html" class="btn btn-outline btn-block mt-10">Add More Items</a>
+  `;
+}
+document.addEventListener('DOMContentLoaded', renderCartPage);
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — Cafe Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <a href="index.html" class="brand"><span class="cup">☕</span> Cafe Point</a>
+  <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="menu.html">Menu</a></li></ul>
+  <div class="nav-actions"><a href="cart.html" class="nav-icon-btn">🛒<span class="cart-badge">0</span></a><div id="authArea"></div><button class="nav-toggle" id="navToggle">☰</button></div>
+</nav>
+<div class="spacer-nav"></div>
+
+<section class="section" style="padding-top:20px;">
+  <div class="container" style="max-width:760px;">
+    <div id="confirmationBody"><div class="loader"></div></div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container footer-bottom">© 2026 Cafe Point. All rights reserved.</div></footer>
+
+<script src="js/api.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script>
+const STATUS_STEPS = ['RECEIVED', 'PREPARING', 'READY', 'COMPLETED'];
+
+async function loadConfirmation() {
+  const params = new URLSearchParams(location.search);
+  const orderId = params.get('orderId');
+  const body = document.getElementById('confirmationBody');
+  if (!orderId) { body.innerHTML = `<p class="text-muted">No order specified.</p>`; return; }
+
+  try {
+    const order = await api(`/orders/${orderId}`);
+    const stepIndex = STATUS_STEPS.indexOf(order.status);
+
+    body.innerHTML = `
+      <div class="center reveal visible">
+        <div style="font-size:60px;">✅</div>
+        <h2 class="section-title">Order Placed Successfully!</h2>
+        <p class="text-muted">Order #${order.id} — we'll keep this page updated as your order progresses.</p>
+      </div>
+
+      <div class="status-track">
+        ${STATUS_STEPS.map((s, i) => `
+          <div class="step ${i < stepIndex ? 'done' : ''} ${i === stepIndex ? 'current' : ''}">
+            <div class="dot">${i < stepIndex ? '✓' : i + 1}</div><span>${s}</span>
+          </div>`).join('')}
+      </div>
+
+      <div class="card mt-20">
+        <div class="flex between mt-10"><strong>Customer</strong><span>${order.customer_name}</span></div>
+        <div class="flex between mt-10"><strong>Phone</strong><span>${order.phone}</span></div>
+        <div class="flex between mt-10"><strong>Payment</strong><span class="badge badge-${order.payment_method === 'COD' ? 'pending' : order.payment_status.toLowerCase()}">${order.payment_method} • ${order.payment_status}</span></div>
+        <div class="flex between mt-10"><strong>Order Status</strong><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></div>
+        <hr style="margin:16px 0;border:none;border-top:1px dashed #d9c6a3;">
+        ${order.items.map(i => `<div class="flex between mt-10"><span>${i.item_name} × ${i.quantity}${i.item_note ? ` <small class="text-muted">(${i.item_note})</small>` : ''}</span><span>₹${(i.price * i.quantity).toFixed(2)}</span></div>`).join('')}
+        <div class="flex between mt-20" style="font-weight:700;font-size:18px;"><span>Total</span><span>₹${Number(order.total).toFixed(2)}</span></div>
+      </div>
+
+      <div class="center mt-30">
+        <a href="menu.html" class="btn btn-outline">Order More</a>
+        <a href="my-orders.html" class="btn btn-primary" style="margin-left:12px;">View My Orders</a>
+      </div>
+    `;
+  } catch (err) {
+    body.innerHTML = `<p class="text-muted">${err.message}</p>`;
+  }
+}
+document.addEventListener('DOMContentLoaded', loadConfirmation);
+</script>
+</body>
+</html>

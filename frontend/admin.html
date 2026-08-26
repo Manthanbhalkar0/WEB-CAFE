@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Cafe Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="brand"><span class="cup">☕</span> Cafe Point</div>
+    <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+    <button class="tab-btn" data-tab="orders">🧾 Orders</button>
+    <button class="tab-btn" data-tab="menu">🍽️ Menu Management</button>
+    <button class="tab-btn" data-tab="bookings">📅 Bookings</button>
+    <button class="tab-btn" data-tab="customers">👥 Customers</button>
+    <button class="tab-btn" data-tab="reports">📈 Reports</button>
+    <button class="tab-btn" data-tab="feedback">💬 Feedback</button>
+    <button class="tab-btn" id="adminLogoutBtn" style="margin-top:30px;color:#f3b6a4;">🚪 Logout</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h2 id="panelTitle">Dashboard</h2>
+        <p class="text-muted" style="font-size:14px;">Welcome back, <span id="adminName">Admin</span></p>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section class="admin-panel active" id="panel-dashboard">
+      <div class="grid grid-4" id="statCards"><div class="loader"></div></div>
+    </section>
+
+    <!-- ORDERS -->
+    <section class="admin-panel" id="panel-orders">
+      <div class="flex gap-10 mt-10" style="margin-bottom:18px;flex-wrap:wrap;">
+        <select id="orderStatusFilter">
+          <option value="">All Statuses</option>
+          <option value="RECEIVED">Received</option>
+          <option value="PREPARING">Preparing</option>
+          <option value="READY">Ready</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </div>
+      <div class="table-wrap"><table id="ordersTable"><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- MENU MANAGEMENT -->
+    <section class="admin-panel" id="panel-menu">
+      <button class="btn btn-primary mt-10" id="addProductBtn" style="margin-bottom:18px;">+ Add New Product</button>
+      <div class="table-wrap"><table id="menuTable"><thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Veg</th><th>Available</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- BOOKINGS -->
+    <section class="admin-panel" id="panel-bookings">
+      <div class="table-wrap"><table id="bookingsTable"><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Guests</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section class="admin-panel" id="panel-customers">
+      <div class="table-wrap"><table id="customersTable"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Joined</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="admin-panel" id="panel-reports">
+      <div class="flex gap-10" style="margin-bottom:20px;">
+        <button class="btn btn-outline btn-sm active" data-range="weekly">Weekly</button>
+        <button class="btn btn-outline btn-sm" data-range="monthly">Monthly</button>
+      </div>
+      <div id="reportBody"><div class="loader"></div></div>
+    </section>
+
+    <!-- FEEDBACK -->
+    <section class="admin-panel" id="panel-feedback">
+      <div class="grid grid-3" id="feedbackAdminGrid"><div class="loader"></div></div>
+    </section>
+  </main>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal-box">
+    <button class="close-modal" id="closeProductModal">×</button>
+    <h3 id="productModalTitle">Add Product</h3>
+    <form id="productForm">
+      <input type="hidden" id="pId">
+      <div class="form-group"><label>Product Name</label><input type="text" id="pName" required></div>
+      <div class="form-group"><label>Category</label><input type="text" id="pCategory" required placeholder="e.g. Coffee, Snacks, Pizza"></div>
+      <div class="form-group"><label>Description</label><textarea id="pDescription"></textarea></div>
+      <div class="form-group"><label>Price (₹)</label><input type="number" id="pPrice" min="1" step="0.01" required></div>
+      <div class="form-group"><label>Photo URL</label><input type="url" id="pImage" placeholder="https://images.unsplash.com/..."><span class="hint">Paste a direct image link. Tip: search free photos on unsplash.com and copy the image address.</span></div>
+      <div class="form-group"><label><input type="checkbox" id="pVeg" style="width:auto;" checked> Vegetarian</label></div>
+      <div class="form-group"><label><input type="checkbox" id="pAvailable" style="width:auto;" checked> Available on menu</label></div>
+      <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

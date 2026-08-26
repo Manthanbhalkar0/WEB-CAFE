@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders — Cafe Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <a href="index.html" class="brand"><span class="cup">☕</span> Cafe Point</a>
+  <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="menu.html">Menu</a></li></ul>
+  <div class="nav-actions"><a href="cart.html" class="nav-icon-btn">🛒<span class="cart-badge">0</span></a><div id="authArea"></div><button class="nav-toggle" id="navToggle">☰</button></div>
+</nav>
+<div class="spacer-nav"></div>
+
+<section class="section" style="padding-top:20px;">
+  <div class="container">
+    <h2 class="section-title">My Account</h2>
+
+    <div class="flex gap-10 mt-20" style="border-bottom:2px solid #f0e2cc;">
+      <button class="btn btn-sm" id="ordersTabBtn" style="border-radius:8px 8px 0 0;background:var(--coffee-900);color:#fff;">Orders</button>
+      <button class="btn btn-sm" id="bookingsTabBtn" style="border-radius:8px 8px 0 0;background:var(--cream-300);">Bookings</button>
+    </div>
+
+    <div id="ordersPanel" class="mt-20"><div class="loader"></div></div>
+    <div id="bookingsPanel" class="mt-20" style="display:none;"></div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container footer-bottom">© 2026 Cafe Point. All rights reserved.</div></footer>
+
+<script src="js/api.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (requireLoginRedirect('Please log in to view your orders.')) return;
+  loadOrders();
+  loadBookings();
+
+  document.getElementById('ordersTabBtn').addEventListener('click', () => switchTab('orders'));
+  document.getElementById('bookingsTabBtn').addEventListener('click', () => switchTab('bookings'));
+});
+
+function switchTab(tab) {
+  document.getElementById('ordersPanel').style.display = tab === 'orders' ? 'block' : 'none';
+  document.getElementById('bookingsPanel').style.display = tab === 'bookings' ? 'block' : 'none';
+  document.getElementById('ordersTabBtn').style.background = tab === 'orders' ? 'var(--coffee-900)' : 'var(--cream-300)';
+  document.getElementById('ordersTabBtn').style.color = tab === 'orders' ? '#fff' : 'var(--ink)';
+  document.getElementById('bookingsTabBtn').style.background = tab === 'bookings' ? 'var(--coffee-900)' : 'var(--cream-300)';
+  document.getElementById('bookingsTabBtn').style.color = tab === 'bookings' ? '#fff' : 'var(--ink)';
+}
+
+async function loadOrders() {
+  const panel = document.getElementById('ordersPanel');
+  try {
+    const orders = await api('/orders/mine', { auth: true });
+    if (!orders.length) {
+      panel.innerHTML = `<div class="empty-state"><div class="big-icon">📦</div><p>No orders yet.</p><a href="menu.html" class="btn btn-primary mt-20">Order Now</a></div>`;
+      return;
+    }
+    panel.innerHTML = orders.map(o => `
+      <div class="card mt-20">
+        <div class="flex between"><h4>Order #${o.id}</h4><span class="badge badge-${o.status.toLowerCase()}">${o.status}</span></div>
+        <p class="text-muted mt-10">${formatDate(o.order_date)} • ${o.payment_method} • <span class="badge badge-${o.payment_status.toLowerCase()}">${o.payment_status}</span></p>
+        <div class="mt-10">${o.items.map(i => `<div class="flex between" style="font-size:14px;margin-top:6px;"><span>${i.item_name} × ${i.quantity}</span><span>₹${(i.price * i.quantity).toFixed(2)}</span></div>`).join('')}</div>
+        <div class="flex between mt-10" style="font-weight:700;"><span>Total</span><span>₹${Number(o.total).toFixed(2)}</span></div>
+        <a href="order-confirmation.html?orderId=${o.id}" class="btn btn-outline btn-sm mt-10">Track Order</a>
+      </div>
+    `).join('');
+  } catch (err) {
+    panel.innerHTML = `<p class="text-muted">${err.message}</p>`;
+  }
+}
+
+async function loadBookings() {
+  const panel = document.getElementById('bookingsPanel');
+  try {
+    const bookings = await api('/bookings/mine', { auth: true });
+    if (!bookings.length) {
+      panel.innerHTML = `<div class="empty-state"><div class="big-icon">🍽️</div><p>No table bookings yet.</p><a href="booking.html" class="btn btn-primary mt-20">Book a Table</a></div>`;
+      return;
+    }
+    panel.innerHTML = bookings.map(b => `
+      <div class="card mt-20">
+        <div class="flex between"><h4>Booking #${b.id}</h4><span class="badge badge-${b.status.toLowerCase()}">${b.status}</span></div>
+        <p class="text-muted mt-10">${b.date} at ${b.time} • ${b.guests} guests</p>
+        ${b.notes ? `<p class="mt-10">📝 ${b.notes}</p>` : ''}
+      </div>
+    `).join('');
+  } catch (err) {
+    panel.innerHTML = `<p class="text-muted">${err.message}</p>`;
+  }
+}
+</script>
+</body>
+</html>

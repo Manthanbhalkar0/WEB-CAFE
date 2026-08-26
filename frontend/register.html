@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — Cafe Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body style="background:linear-gradient(160deg,var(--coffee-900),var(--coffee-700));min-height:100vh;">
+
+<nav class="navbar scrolled" id="navbar" style="background:transparent;box-shadow:none;">
+  <a href="index.html" class="brand" style="color:#fff;"><span class="cup">☕</span> Cafe Point</a>
+  <div class="nav-actions"><a href="index.html" class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.5)">← Back to Home</a></div>
+</nav>
+
+<section style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:110px 20px 60px;">
+  <form class="form-card reveal visible" id="registerForm" style="max-width:560px;">
+    <div class="center" style="margin-bottom:26px;">
+      <div style="font-size:40px;">📝</div>
+      <h2 style="margin-top:10px;">Create Your Account</h2>
+      <p class="text-muted" style="margin-top:6px;">Register with your contact details so we can reach you about your order.</p>
+    </div>
+    <div class="form-alert" id="regAlert"></div>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="name" placeholder="e.g. Aarav Sharma" required autocomplete="name">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label>Contact Number</label>
+        <input type="tel" id="phone" placeholder="e.g. 9876543210" required autocomplete="tel">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Address (optional)</label>
+      <input type="text" id="address" placeholder="For delivery / pickup reference" autocomplete="street-address">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="At least 6 characters" required autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPassword" placeholder="Re-enter password" required autocomplete="new-password">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block" id="regBtn">Create Account</button>
+    <p class="center mt-20" style="font-size:14px;">Already have an account? <a href="login.html" style="color:var(--gold-600);font-weight:600;">Log in</a></p>
+  </form>
+</section>
+
+<script src="js/api.js"></script>
+<script src="js/cart.js"></script>
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const alertBox = document.getElementById('regAlert');
+  const btn = document.getElementById('regBtn');
+  alertBox.className = 'form-alert';
+
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  if (password !== confirmPassword) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = 'Passwords do not match.';
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  try {
+    const data = await api('/auth/register', { method: 'POST', body: { name, email, phone, address, password } });
+    setSession(data.token, data.user);
+    alertBox.className = 'form-alert success';
+    alertBox.textContent = 'Account created! Redirecting...';
+
+    // clear the form so fields are empty and ready for next time
+    document.getElementById('registerForm').reset();
+
+    setTimeout(() => (window.location.href = 'index.html'), 700);
+  } catch (err) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+});
+</script>
+</body>
+</html>

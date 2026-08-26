@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Cafe Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body style="background:linear-gradient(160deg,var(--coffee-900),var(--coffee-700));min-height:100vh;">
+
+<nav class="navbar scrolled" id="navbar" style="background:transparent;box-shadow:none;">
+  <a href="index.html" class="brand" style="color:#fff;"><span class="cup">☕</span> Cafe Point</a>
+  <div class="nav-actions"><a href="index.html" class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.5)">← Back to Home</a></div>
+</nav>
+
+<section style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:110px 20px 60px;">
+  <form class="form-card reveal visible" id="loginForm">
+    <div class="center" style="margin-bottom:26px;">
+      <div style="font-size:40px;">☕</div>
+      <h2 style="margin-top:10px;">Welcome Back</h2>
+      <p class="text-muted" style="margin-top:6px;">Log in to order, track and book tables.</p>
+    </div>
+    <div class="form-alert" id="loginAlert"></div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Login</button>
+    <p class="center mt-20" style="font-size:14px;">Don't have an account? <a href="register.html" style="color:var(--gold-600);font-weight:600;">Sign up</a></p>
+    <p class="center mt-10" style="font-size:12px;" class="text-muted">Admin? Use your admin email &amp; password to log in — you'll be redirected automatically.</p>
+  </form>
+</section>
+
+<script src="js/api.js"></script>
+<script src="js/cart.js"></script>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const alertBox = document.getElementById('loginAlert');
+  const btn = document.getElementById('loginBtn');
+  alertBox.className = 'form-alert';
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  btn.disabled = true; btn.textContent = 'Logging in...';
+  try {
+    const data = await api('/auth/login', { method: 'POST', body: { email, password } });
+    setSession(data.token, data.user);
+    alertBox.className = 'form-alert success';
+    alertBox.textContent = 'Login successful! Redirecting...';
+
+    // clear the form so it's blank if the user comes back to this page later
+    document.getElementById('loginForm').reset();
+
+    const params = new URLSearchParams(location.search);
+    const next = params.get('next');
+    setTimeout(() => {
+      if (data.user.role === 'ADMIN') window.location.href = 'admin.html';
+      else window.location.href = next && !next.includes('login') ? next : 'index.html';
+    }, 700);
+  } catch (err) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Login';
+  }
+});
+</script>
+</body>
+</html>

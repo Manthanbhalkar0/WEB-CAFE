@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Table — Cafe Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <a href="index.html" class="brand"><span class="cup">☕</span> Cafe Point</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="booking.html" class="active">Book a Table</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-actions"><a href="cart.html" class="nav-icon-btn">🛒<span class="cart-badge">0</span></a><div id="authArea"></div><button class="nav-toggle" id="navToggle">☰</button></div>
+</nav>
+<div class="spacer-nav"></div>
+
+<section class="section" style="padding-top:20px;">
+  <div class="container">
+    <div class="grid grid-2" style="gap:50px;align-items:center;">
+      <div class="reveal">
+        <div class="section-tag">Reserve Your Spot</div>
+        <h2 class="section-title">Book a table at Cafe Point</h2>
+        <p class="section-sub">Whether it's a quiet coffee date or a get-together with friends, reserve a table in seconds. We'll contact you at the number you provide to confirm.</p>
+        <div style="font-size:100px;text-align:center;">🍽️</div>
+      </div>
+      <form class="form-card reveal reveal-delay-1" id="bookingForm" style="max-width:100%;">
+        <div class="form-alert" id="bookingAlert"></div>
+        <div class="form-group"><label>Full Name</label><input type="text" id="bName" required></div>
+        <div class="form-group"><label>Contact Number</label><input type="tel" id="bPhone" required></div>
+        <div class="form-row">
+          <div class="form-group"><label>Number of Guests</label><input type="number" id="bGuests" min="1" max="30" value="2" required></div>
+          <div class="form-group"><label>Date</label><input type="date" id="bDate" required></div>
+        </div>
+        <div class="form-group"><label>Time</label><input type="time" id="bTime" required></div>
+        <div class="form-group"><label>Special Request (optional)</label><textarea id="bNotes" placeholder="Birthday setup, window seat, high chair needed..."></textarea></div>
+        <button type="submit" class="btn btn-primary btn-block" id="bookingBtn">Book Table</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container footer-bottom">© 2026 Cafe Point. All rights reserved.</div></footer>
+
+<script src="js/api.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('bDate').min = new Date().toISOString().slice(0, 10);
+  const user = getUser();
+  if (user) {
+    document.getElementById('bName').value = user.name || '';
+    document.getElementById('bPhone').value = user.phone || '';
+  }
+});
+
+document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const alertBox = document.getElementById('bookingAlert');
+  const btn = document.getElementById('bookingBtn');
+  alertBox.className = 'form-alert';
+
+  const body = {
+    name: document.getElementById('bName').value.trim(),
+    phone: document.getElementById('bPhone').value.trim(),
+    guests: document.getElementById('bGuests').value,
+    date: document.getElementById('bDate').value,
+    time: document.getElementById('bTime').value,
+    notes: document.getElementById('bNotes').value.trim()
+  };
+
+  btn.disabled = true; btn.textContent = 'Booking...';
+  try {
+    const data = await api('/bookings', { method: 'POST', body, auth: isLoggedIn() });
+    alertBox.className = 'form-alert success';
+    alertBox.textContent = `${data.message} (Booking #${data.bookingId})`;
+    document.getElementById('bookingForm').reset(); // clear the form for next use
+    document.getElementById('bDate').min = new Date().toISOString().slice(0, 10);
+  } catch (err) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Book Table';
+  }
+});
+</script>
+</body>
+</html>

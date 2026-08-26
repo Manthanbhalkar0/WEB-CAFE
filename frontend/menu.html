@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu — Cafe Point</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <a href="index.html" class="brand"><span class="cup">☕</span> Cafe Point</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="menu.html" class="active">Menu</a></li>
+    <li><a href="booking.html">Book a Table</a></li>
+    <li><a href="index.html#testimonials">Reviews</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon-btn">🛒<span class="cart-badge">0</span></a>
+    <div id="authArea"></div>
+    <button class="nav-toggle" id="navToggle">☰</button>
+  </div>
+</nav>
+<div class="spacer-nav"></div>
+
+<section class="section" style="padding-top:40px;">
+  <div class="container">
+    <div class="section-tag reveal">Our Menu</div>
+    <h2 class="section-title reveal">Fresh, made-to-order favourites</h2>
+    <p class="section-sub reveal">Filter by category, search for a dish, and add it straight to your cart.</p>
+
+    <div class="flex gap-10" style="margin-bottom:26px;flex-wrap:wrap;">
+      <input type="text" id="searchInput" placeholder="🔍 Search for coffee, sandwich, pizza..." style="max-width:340px;">
+      <label class="flex gap-10" style="font-size:14px;font-weight:600;color:var(--coffee-800);cursor:pointer;">
+        <input type="checkbox" id="vegOnly" style="width:auto;"> Veg only
+      </label>
+    </div>
+
+    <div class="flex gap-10" id="categoryPills" style="flex-wrap:wrap;margin-bottom:36px;">
+      <button class="category-pill active" data-cat="">All</button>
+    </div>
+
+    <div class="grid grid-4" id="menuGrid">
+      <div class="loader"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-bottom">© 2026 Cafe Point. All rights reserved.</div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script src="js/menu.js"></script>
+</body>
+</html>
