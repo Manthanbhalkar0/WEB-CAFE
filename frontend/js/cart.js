@@ -31,6 +31,29 @@ function addToCart(item) {
   saveCart(cart);
   toast(`${item.name} added to cart`, 'success');
 }
+
+/** Add item and go straight to checkout (direct order). */
+function orderNow(item) {
+  if (!isLoggedIn()) {
+    // Keep the item in cart so checkout is ready after login
+    const cart = getCart();
+    const existing = cart.find(i => i.id === item.id);
+    if (existing) existing.quantity += 1;
+    else cart.push({ ...item, quantity: 1, note: '' });
+    saveCart(cart);
+    toast('Please log in to place your order.', 'error');
+    setTimeout(() => {
+      window.location.href = `login.html?next=${encodeURIComponent('checkout.html')}`;
+    }, 700);
+    return;
+  }
+  const cart = getCart();
+  const existing = cart.find(i => i.id === item.id);
+  if (existing) existing.quantity += 1;
+  else cart.push({ ...item, quantity: 1, note: '' });
+  saveCart(cart);
+  window.location.href = 'checkout.html';
+}
 function changeQuantity(id, delta) {
   const cart = getCart();
   const item = cart.find(i => i.id === id);

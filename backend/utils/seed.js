@@ -1,6 +1,6 @@
 // Run with: npm run seed
-// 1. Creates all tables (from db/schema.sql) if they don't exist yet.
-// 2. Creates the default ADMIN account from your .env values (if missing).
+// 1. Creates all tables (from schema.sql) if they don't exist yet.
+// 2. Creates or syncs the default ADMIN account from your .env values.
 
 require('dotenv').config();
 const fs = require('fs');
@@ -28,25 +28,29 @@ async function seed() {
 
   await connection.changeUser({ database: process.env.DB_NAME || 'cafe_point' });
 
+  const adminName = process.env.ADMIN_NAME || 'Cafe Point Admin';
   const adminEmail = (process.env.ADMIN_EMAIL || 'admin@cafepoint.com').toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD || 'Cp#Admin9xK7mQ!';
+  const adminPhone = process.env.ADMIN_PHONE || '8459662016';
+  const passwordHash = await bcrypt.hash(adminPassword, 10);
+
   const [existing] = await connection.query('SELECT id FROM users WHERE email = ?', [adminEmail]);
 
   if (existing.length === 0) {
-    const passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'Admin@123', 10);
     await connection.query(
       `INSERT INTO users (name, email, password_hash, phone, role) VALUES (?, ?, ?, ?, 'ADMIN')`,
-      [
-        process.env.ADMIN_NAME || 'Cafe Point Admin',
-        adminEmail,
-        passwordHash,
-        process.env.ADMIN_PHONE || '8459662016'
-      ]
+      [adminName, adminEmail, passwordHash, adminPhone]
     );
-    console.log(`✅ Default admin created -> email: ${adminEmail} | password: ${process.env.ADMIN_PASSWORD || 'Admin@123'}`);
-    console.log('   ⚠️  Please log in and change this password in production.');
+    console.log(`✅ Default admin created -> email: ${adminEmail}`);
   } else {
-    console.log('ℹ️  Admin account already exists, skipping.');
+    await connection.query(
+      `UPDATE users SET name = ?, password_hash = ?, phone = ?, role = 'ADMIN' WHERE email = ?`,
+      [adminName, passwordHash, adminPhone, adminEmail]
+    );
+    console.log(`✅ Default admin synced from .env -> email: ${adminEmail}`);
   }
+  console.log('   Use the ADMIN_PASSWORD from your .env to log in.');
+  console.log('   ⚠️  Change ADMIN_PASSWORD + JWT_SECRET before any public deployment.');
 
   await connection.end();
   console.log('🎉 Database setup complete! You can now run: npm start');

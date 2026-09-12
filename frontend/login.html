@@ -15,7 +15,7 @@
 </nav>
 
 <section style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:110px 20px 60px;">
-  <form class="form-card reveal visible" id="loginForm">
+  <form class="form-card reveal visible" id="loginForm" novalidate>
     <div class="center" style="margin-bottom:26px;">
       <div style="font-size:40px;">☕</div>
       <h2 style="margin-top:10px;">Welcome Back</h2>
@@ -24,21 +24,33 @@
     <div class="form-alert" id="loginAlert"></div>
     <div class="form-group">
       <label>Email Address</label>
-      <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+      <input type="email" id="email" placeholder="you@example.com" required autocomplete="username">
     </div>
     <div class="form-group">
       <label>Password</label>
       <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
     </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+      <input type="checkbox" id="rememberMe" style="width:auto;margin:0;">
+      <label for="rememberMe" style="margin:0;font-weight:500;">Remember my email on this device</label>
+    </div>
     <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Login</button>
     <p class="center mt-20" style="font-size:14px;">Don't have an account? <a href="register.html" style="color:var(--gold-600);font-weight:600;">Sign up</a></p>
-    <p class="center mt-10" style="font-size:12px;" class="text-muted">Admin? Use your admin email &amp; password to log in — you'll be redirected automatically.</p>
+    <p class="center mt-10" style="font-size:12px;" class="text-muted">Admin? Log in with your admin email — you'll be redirected to the dashboard.</p>
   </form>
 </section>
 
 <script src="js/api.js"></script>
 <script src="js/cart.js"></script>
 <script>
+(function prefillRemembered() {
+  const email = getRememberedEmail();
+  if (email) {
+    document.getElementById('email').value = email;
+    document.getElementById('rememberMe').checked = true;
+  }
+})();
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const alertBox = document.getElementById('loginAlert');
@@ -47,22 +59,38 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
+  const rememberMe = document.getElementById('rememberMe').checked;
+
+  const clientError = validateLoginForm({ email, password });
+  if (clientError) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = clientError;
+    return;
+  }
 
   btn.disabled = true; btn.textContent = 'Logging in...';
   try {
     const data = await api('/auth/login', { method: 'POST', body: { email, password } });
     setSession(data.token, data.user);
+
+    if (rememberMe) {
+      saveRememberedEmail(email);
+    } else {
+      clearRememberedEmail();
+    }
+
     alertBox.className = 'form-alert success';
     alertBox.textContent = 'Login successful! Redirecting...';
-
-    // clear the form so it's blank if the user comes back to this page later
-    document.getElementById('loginForm').reset();
 
     const params = new URLSearchParams(location.search);
     const next = params.get('next');
     setTimeout(() => {
-      if (data.user.role === 'ADMIN') window.location.href = 'admin.html';
-      else window.location.href = next && !next.includes('login') ? next : 'index.html';
+      const role = String(data.user?.role || '').toUpperCase();
+      if (role === 'ADMIN') {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = next && !next.includes('login') ? next : 'index.html';
+      }
     }, 700);
   } catch (err) {
     alertBox.className = 'form-alert error';

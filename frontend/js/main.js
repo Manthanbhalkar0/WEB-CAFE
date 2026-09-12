@@ -43,7 +43,7 @@ function initAuthArea() {
     return;
   }
 
-  if (user.role === 'ADMIN') {
+  if (String(user.role || '').toUpperCase() === 'ADMIN') {
     area.innerHTML = `
       <a href="admin.html" class="btn btn-primary btn-sm">Admin Panel</a>
       <button class="btn btn-outline btn-sm" id="logoutBtn">Logout</button>
@@ -110,7 +110,8 @@ function initParallax() {
 function requireLoginRedirect(message = 'Please log in to continue.') {
   if (!isLoggedIn()) {
     toast(message, 'error');
-    setTimeout(() => (window.location.href = `login.html?next=${encodeURIComponent(location.pathname)}`), 900);
+    const page = (location.pathname.split('/').pop() || 'index.html');
+    setTimeout(() => (window.location.href = `login.html?next=${encodeURIComponent(page)}`), 900);
     return true;
   }
   return false;

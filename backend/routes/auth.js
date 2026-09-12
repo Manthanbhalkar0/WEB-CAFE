@@ -4,6 +4,12 @@ const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const pool = require('../config/db');
 const { requireAuth } = require('../middleware/auth');
+const {
+  isValidPhone,
+  isValidPassword,
+  PASSWORD_HINT,
+  PHONE_HINT
+} = require('../utils/validators');
 
 const router = express.Router();
 
@@ -15,10 +21,28 @@ function signToken(user) {
   );
 }
 
+function validateRegistrationFields({ name, email, password, phone }) {
+  if (!name || !email || !password || !phone) {
+    return 'Name, email, phone and password are required.';
+  }
+  if (name.length < 2 || name.length > 120) {
+    return 'Name must be between 2 and 120 characters.';
+  }
+  if (!validator.isEmail(email)) {
+    return 'Please enter a valid email address.';
+  }
+  if (!isValidPassword(password)) {
+    return PASSWORD_HINT;
+  }
+  if (!isValidPhone(phone)) {
+    return PHONE_HINT;
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------
-// POST /api/auth/register  (FR-002)
-// Customer must register with contact details before ordering,
-// so the admin can reach them about their order.
+// POST /api/auth/register  — customer signup only
+// Admin accounts are created via seed or by an existing admin.
 // ---------------------------------------------------------------
 router.post('/register', async (req, res) => {
   try {
@@ -29,17 +53,17 @@ router.post('/register', async (req, res) => {
     phone = (phone || '').trim();
     address = (address || '').trim();
 
-    if (!name || !email || !password || !phone) {
-      return res.status(400).json({ error: 'Name, email, phone and password are required.' });
+    const fieldError = validateRegistrationFields({ name, email, password, phone });
+    if (fieldError) {
+      return res.status(400).json({ error: fieldError });
     }
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ error: 'Please enter a valid email address.' });
-    }
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters.' });
-    }
-    if (!/^[0-9+\-\s]{7,15}$/.test(phone)) {
-      return res.status(400).json({ error: 'Please enter a valid contact number.' });
+
+    // Never allow the configured admin email to become a customer account
+    const reservedAdminEmail = (process.env.ADMIN_EMAIL || 'admin@cafepoint.com').toLowerCase();
+    if (email === reservedAdminEmail) {
+      return res.status(403).json({
+        error: 'This email is reserved for the admin account. Please log in instead.'
+      });
     }
 
     const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
@@ -50,13 +74,24 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
     const [result] = await pool.query(
       'INSERT INTO users (name, email, password_hash, phone, address, role) VALUES (?, ?, ?, ?, ?, "CUSTOMER")',
-      [name, email, passwordHash, phone, address]
+      [name, email, passwordHash, phone, address || null]
     );
 
-    const user = { id: result.insertId, name, email, role: 'CUSTOMER' };
+    const user = {
+      id: result.insertId,
+      name,
+      email,
+      phone,
+      address: address || null,
+      role: 'CUSTOMER'
+    };
     const token = signToken(user);
 
-    res.status(201).json({ message: 'Registration successful!', token, user });
+    res.status(201).json({
+      message: 'Registration successful!',
+      token,
+      user
+    });
   } catch (err) {
     console.error('Register error:', err.message);
     res.status(500).json({ error: 'Something went wrong while registering. Please try again.' });
@@ -64,7 +99,7 @@ router.post('/register', async (req, res) => {
 });
 
 // ---------------------------------------------------------------
-// POST /api/auth/login  (FR-003) - works for both customers and admin
+// POST /api/auth/login  — customers and admin
 // ---------------------------------------------------------------
 router.post('/login', async (req, res) => {
   try {
@@ -73,6 +108,9 @@ router.post('/login', async (req, res) => {
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required.' });
+    }
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
     }
 
     const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -90,7 +128,14 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Login successful!',
       token,
-      user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role }
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        role: user.role
+      }
     });
   } catch (err) {
     console.error('Login error:', err.message);
@@ -99,7 +144,7 @@ router.post('/login', async (req, res) => {
 });
 
 // ---------------------------------------------------------------
-// GET /api/auth/me - current logged-in user's profile + order history
+// GET /api/auth/me - current logged-in user's profile
 // ---------------------------------------------------------------
 router.get('/me', requireAuth, async (req, res) => {
   try {

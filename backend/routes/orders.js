@@ -1,23 +1,24 @@
 const express = require('express');
 const PDFDocument = require('pdfkit');
 const pool = require('../config/db');
-const { requireAuth, requireAdmin, optionalAuth } = require('../middleware/auth');
+const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { isValidPhone, PHONE_HINT } = require('../utils/validators');
 
 const router = express.Router();
 
 // ---------------------------------------------------------------
-// POST /api/orders  (FR-005) - place an order
+// POST /api/orders  (FR-005) - place an order (login required)
 // Order + order_items are written in a single DB transaction (NFR 4.3)
 // so they are either both saved or neither is.
 // ---------------------------------------------------------------
-router.post('/', optionalAuth, async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   const { customer_name, phone, address, items, payment_method, special_instructions } = req.body;
 
   if (!customer_name || !phone || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Customer name, phone and at least one item are required.' });
   }
-  if (!/^[0-9+\-\s]{7,15}$/.test(phone)) {
-    return res.status(400).json({ error: 'Please enter a valid contact number so we can reach you.' });
+  if (!isValidPhone(phone)) {
+    return res.status(400).json({ error: PHONE_HINT });
   }
   const method = ['UPI', 'CARD', 'COD'].includes(payment_method) ? payment_method : 'COD';
 
@@ -52,7 +53,7 @@ router.post('/', optionalAuth, async (req, res) => {
     }
     total = Math.round(total * 100) / 100;
 
-    const userId = req.user ? req.user.id : null;
+    const userId = req.user.id;
     // Cash on Delivery is considered PENDING until collected; UPI/CARD start PENDING until admin confirms receipt
     const [orderResult] = await connection.query(
       `INSERT INTO orders (user_id, customer_name, phone, address, total, payment_method, payment_status, status, special_instructions)

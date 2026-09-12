@@ -27,9 +27,12 @@ function menuCardHTML(item) {
           <span class="veg-dot ${item.is_veg ? '' : 'non-veg'}" title="${item.is_veg ? 'Veg' : 'Non-Veg'}"></span>
         </div>
         <p class="desc">${escapeHTML(item.description || '')}</p>
-        <div class="row">
+        <div class="row menu-actions">
           <span class="price-tag">${formatMoney(item.price)}</span>
-          <button class="btn btn-primary btn-sm" onclick='addToCart(${JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image }).replace(/'/g, "&apos;")})'>Add +</button>
+          <div class="menu-btns">
+            <button type="button" class="btn btn-outline btn-sm" onclick='addToCart(${JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image }).replace(/'/g, "&apos;")})'>Add</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick='orderNow(${JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image }).replace(/'/g, "&apos;")})'>Order Now</button>
+          </div>
         </div>
       </div>
     </div>`;

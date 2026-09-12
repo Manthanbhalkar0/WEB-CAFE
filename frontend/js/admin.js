@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const user = getUser();
-  if (!isLoggedIn() || !user || user.role !== 'ADMIN') {
+  const role = String(user?.role || '').toUpperCase();
+  if (!isLoggedIn() || !user || role !== 'ADMIN') {
     toast('Admin login required.', 'error');
     setTimeout(() => (window.location.href = 'login.html'), 800);
     return;
@@ -245,6 +246,43 @@ async function loadCustomers() {
     tbody.innerHTML = `<tr><td colspan="5">${err.message}</td></tr>`;
   }
 }
+
+document.getElementById('createAdminForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const alertBox = document.getElementById('createAdminAlert');
+  const btn = document.getElementById('createAdminBtn');
+  alertBox.className = 'form-alert';
+
+  const name = document.getElementById('adminNewName').value.trim();
+  const email = document.getElementById('adminNewEmail').value.trim();
+  const phone = document.getElementById('adminNewPhone').value.trim();
+  const password = document.getElementById('adminNewPassword').value;
+
+  const clientError = validateRegisterForm({ name, email, phone, password, confirmPassword: password });
+  if (clientError) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = clientError;
+    return;
+  }
+
+  btn.disabled = true;
+  try {
+    const data = await api('/admin/admins', {
+      method: 'POST',
+      auth: true,
+      body: { name, email, phone, password }
+    });
+    alertBox.className = 'form-alert success';
+    alertBox.textContent = data.message || 'Admin created.';
+    document.getElementById('createAdminForm').reset();
+    toast('Admin account created', 'success');
+  } catch (err) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 /* ==================== REPORTS ==================== */
 async function loadReport(range) {

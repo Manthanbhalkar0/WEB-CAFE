@@ -63,6 +63,22 @@
 
     <!-- CUSTOMERS -->
     <section class="admin-panel" id="panel-customers">
+      <div class="form-card" style="max-width:100%;margin-bottom:24px;">
+        <h3 style="margin-bottom:14px;">Create Admin Account</h3>
+        <p class="text-muted" style="margin-bottom:16px;font-size:14px;">Only logged-in admins can create another admin. Public signup is customer-only.</p>
+        <div class="form-alert" id="createAdminAlert"></div>
+        <form id="createAdminForm">
+          <div class="form-row">
+            <div class="form-group"><label>Full Name</label><input type="text" id="adminNewName" required minlength="2"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="adminNewEmail" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Phone</label><input type="tel" id="adminNewPhone" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="adminNewPassword" required placeholder="8+ chars, letter, number, symbol"></div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm" id="createAdminBtn">Create Admin</button>
+        </form>
+      </div>
       <div class="table-wrap"><table id="customersTable"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Joined</th></tr></thead><tbody></tbody></table></div>
     </section>
 

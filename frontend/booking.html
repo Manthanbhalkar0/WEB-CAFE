@@ -76,6 +76,12 @@ document.getElementById('bookingForm').addEventListener('submit', async (e) => {
     notes: document.getElementById('bNotes').value.trim()
   };
 
+  if (!isValidPhoneClient(body.phone)) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = AUTH_PHONE_HINT;
+    return;
+  }
+
   btn.disabled = true; btn.textContent = 'Booking...';
   try {
     const data = await api('/bookings', { method: 'POST', body, auth: isLoggedIn() });

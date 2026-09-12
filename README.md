@@ -114,12 +114,14 @@ cp .env.example .env
 ```
 Open `backend/.env` in any text editor and fill in:
 - `DB_PASSWORD` — your MySQL root password
-- `JWT_SECRET` — replace with any long random string (this signs login
-  tokens — keep it secret)
-- `ADMIN_EMAIL` / `ADMIN_PASSWORD` — the login you'll use to access
-  `/admin.html`
-- `UPI_ID` / `UPI_NUMBER` — already set to **8459662016** as you requested;
-  change it any time
+- `JWT_SECRET` — a long random string (never reuse the example value in production)
+- `ADMIN_EMAIL` / `ADMIN_PASSWORD` — admin login for `/admin.html`
+  (password must be 8+ characters with a letter, number and special character)
+- `UPI_ID` / `UPI_NUMBER` — your UPI payment details
+
+> **Production:** generate a fresh `JWT_SECRET` and a unique `ADMIN_PASSWORD`
+> before deploying. Re-run `npm run seed` after changing admin credentials so
+> the database password hash is updated.
 
 ### Step 4 — Create the database
 Make sure MySQL is running, then from inside `backend/`:
@@ -127,8 +129,9 @@ Make sure MySQL is running, then from inside `backend/`:
 npm run seed
 ```
 This creates the `cafe_point` database, all tables, a starter menu (16
-items across 5 categories), and your admin account. You'll see a message
-confirming the admin login was created.
+items across 5 categories), and your admin account from `.env`.
+Public registration is **customer-only**. Additional admins can only be
+created by a logged-in admin from the **Customers** tab in the dashboard.
 
 ### Step 5 — Start the server
 ```bash
@@ -136,11 +139,11 @@ npm start
 ```
 You should see:
 ```
-🍵 Cafe Point server running at http://localhost:3000
+🍵 Cafe Point server running at http://localhost:4000
 ```
-Open **http://localhost:3000** in your browser — that's the whole
+Open **http://localhost:4000** in your browser — that's the whole
 website (frontend + backend running together on one port). Log in to
-**http://localhost:3000/admin.html** with the admin email/password from
+**http://localhost:4000/admin.html** with the admin email/password from
 your `.env`.
 
 > During development you can instead run `npm run dev` (uses nodemon) so
@@ -256,9 +259,12 @@ To make the site reachable on the internet (not just localhost):
 - **"Could not connect to MySQL"** on startup → check `DB_PASSWORD` in
   `.env`, and that MySQL is actually running (`mysql.server start` on
   Mac, or check the MySQL service on Windows/Linux).
-- **Admin login doesn't work** → re-run `npm run seed`; it prints the
-  exact admin email/password it created (only creates it once).
-- **Port 3000 already in use** → change `PORT` in `.env`.
+- **Admin login doesn't work** → re-run `npm run seed` (it syncs the
+  admin password from `.env`) and use the exact `ADMIN_EMAIL` /
+  `ADMIN_PASSWORD` values.
+- **Port 4000 already in use** → change `PORT` in `.env`.
+- **Registration rejected** → passwords need 8+ characters with a letter,
+  number and special character; phones need a real 10–13 digit number.
 - **Changes to frontend not showing** → hard-refresh the browser
   (Ctrl/Cmd + Shift + R) — static files are sometimes cached.
 

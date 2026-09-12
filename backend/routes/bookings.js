@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../config/db');
 const { requireAuth, requireAdmin, optionalAuth } = require('../middleware/auth');
+const { isValidPhone, PHONE_HINT } = require('../utils/validators');
 
 const router = express.Router();
 
@@ -17,8 +18,8 @@ router.post('/', optionalAuth, async (req, res) => {
     if (!name || !phone || !guests || !date || !time) {
       return res.status(400).json({ error: 'Name, phone, guests, date and time are all required.' });
     }
-    if (!/^[0-9+\-\s]{7,15}$/.test(phone)) {
-      return res.status(400).json({ error: 'Please enter a valid contact number.' });
+    if (!isValidPhone(phone)) {
+      return res.status(400).json({ error: PHONE_HINT });
     }
     if (isNaN(guests) || Number(guests) < 1 || Number(guests) > 30) {
       return res.status(400).json({ error: 'Number of guests must be between 1 and 30.' });

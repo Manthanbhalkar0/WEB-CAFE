@@ -12,28 +12,61 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Registration requirement per SRS: user should register before placing an order
   if (!isLoggedIn()) {
     document.getElementById('notLoggedInNotice').style.display = 'block';
   } else {
-    const user = getUser();
-    document.getElementById('customerName').value = user.name || '';
+    autofillCheckoutDetails();
   }
 
   renderCheckoutSummary();
-  renderUpiQr();
 
   document.querySelectorAll('.radio-card').forEach(card => {
     card.addEventListener('click', () => {
       document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       card.querySelector('input').checked = true;
-      document.getElementById('upiBox').style.display = card.dataset.method === 'UPI' ? 'block' : 'none';
     });
   });
 
   document.getElementById('checkoutForm').addEventListener('submit', placeOrder);
 });
+
+function fillCheckoutFields({ name, phone, address }) {
+  const nameEl = document.getElementById('customerName');
+  const phoneEl = document.getElementById('customerPhone');
+  const addressEl = document.getElementById('customerAddress');
+  if (nameEl && name) nameEl.value = name;
+  if (phoneEl && phone) phoneEl.value = phone;
+  if (addressEl && address) addressEl.value = address;
+}
+
+async function autofillCheckoutDetails() {
+  const user = getUser() || {};
+  fillCheckoutFields({
+    name: user.name,
+    phone: user.phone,
+    address: user.address
+  });
+
+  try {
+    const profile = await api('/auth/me', { auth: true });
+    fillCheckoutFields({
+      name: profile.name,
+      phone: profile.phone,
+      address: profile.address
+    });
+    setSession(getToken(), {
+      id: profile.id,
+      name: profile.name,
+      email: profile.email,
+      phone: profile.phone,
+      address: profile.address,
+      role: profile.role
+    });
+  } catch (err) {
+    // keep whatever we filled from the local session
+  }
+}
 
 function renderCheckoutSummary() {
   const cart = getCart();
@@ -45,21 +78,8 @@ function renderCheckoutSummary() {
       <div class="summary-row"><span>${i.name} × ${i.quantity}</span><span>${formatMoney(i.price * i.quantity)}</span></div>
     `).join('')}
     <div class="summary-row total"><span>Total</span><span>${formatMoney(total)}</span></div>
+    <p class="text-muted" style="font-size:13px;margin-top:14px;">No online payment required right now. Place your order and pay at the cafe / on delivery.</p>
   `;
-}
-
-// Builds a real upi:// deep link for the current cart total and renders it as a scannable QR code
-function renderUpiQr() {
-  const total = cartTotal().toFixed(2);
-  const upiId = '8459662016@upi';
-  const upiLink = `upi://pay?pa=${upiId}&pn=CafePoint&am=${total}&cu=INR&tn=CafePointOrder`;
-
-  const qrImg = document.getElementById('upiQrImg');
-  const payLink = document.getElementById('upiPayLink');
-  const amountLabel = document.getElementById('upiAmountLabel');
-  if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiLink)}`;
-  if (payLink) payLink.href = upiLink;
-  if (amountLabel) amountLabel.textContent = formatMoney(total);
 }
 
 async function placeOrder(e) {
@@ -74,28 +94,47 @@ async function placeOrder(e) {
   const phone = document.getElementById('customerPhone').value.trim();
   const address = document.getElementById('customerAddress').value.trim();
   const special_instructions = document.getElementById('specialInstructions').value.trim();
-  const payment_method = document.querySelector('input[name="payMethod"]:checked').value;
+  const payment_method = document.querySelector('input[name="payMethod"]:checked')?.value || 'COD';
+
+  if (!customer_name) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = 'Please enter your full name.';
+    return;
+  }
+  if (!isValidPhoneClient(phone)) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = AUTH_PHONE_HINT;
+    return;
+  }
 
   const cart = getCart();
+  if (!cart.length) {
+    alertBox.className = 'form-alert error';
+    alertBox.textContent = 'Your cart is empty. Add items from the menu first.';
+    return;
+  }
+
   const items = cart.map(i => ({ menu_item_id: i.id, quantity: i.quantity, note: i.note || '' }));
 
-  btn.disabled = true; btn.textContent = 'Placing order...';
+  btn.disabled = true;
+  btn.textContent = 'Placing order...';
   try {
+    // Places the order immediately — no money transfer / payment gateway step
     const data = await api('/orders', {
       method: 'POST',
       auth: true,
       body: { customer_name, phone, address, items, payment_method, special_instructions }
     });
 
-    clearCart(); // empty the cart so it's fresh next time
-
-    // clear the sensitive input fields on this page too
-    document.getElementById('checkoutForm').reset();
+    // Clear cart so ordered items are gone
+    clearCart();
+    updateCartBadge();
 
     window.location.href = `order-confirmation.html?orderId=${data.orderId}`;
   } catch (err) {
     alertBox.className = 'form-alert error';
     alertBox.textContent = err.message;
-    btn.disabled = false; btn.textContent = 'Place Order';
+    btn.disabled = false;
+    btn.textContent = 'Place Order';
   }
 }
