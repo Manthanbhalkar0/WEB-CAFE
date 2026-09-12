@@ -10,16 +10,24 @@ async function loadFeaturedMenu() {
   if (!grid) return;
   try {
     const items = await api('/menu');
-    const featured = items.slice(0, 4);
-    grid.innerHTML = featured.map(menuCardHTML).join('') || `<p class="text-muted">Menu coming soon!</p>`;
+    // Pick one highlight per category so Fan Favourites feels varied
+    const byCategory = new Map();
+    for (const item of items) {
+      if (!byCategory.has(item.category)) byCategory.set(item.category, item);
+    }
+    const featured = [...byCategory.values()].slice(0, 4);
+    const fallback = items.slice(0, 4);
+    const picks = featured.length >= 4 ? featured : (featured.length ? featured : fallback);
+    grid.innerHTML = picks.map(menuCardHTML).join('') || `<p class="text-muted">Menu coming soon!</p>`;
   } catch (err) {
     grid.innerHTML = `<p class="text-muted">Could not load the menu right now.</p>`;
   }
 }
 
 function menuCardHTML(item) {
+  // Use "visible" so cards show immediately — they are injected after initScrollReveal runs
   return `
-    <div class="card menu-card reveal">
+    <div class="card menu-card reveal visible">
       <img class="photo" src="${escapeHTML(item.image) || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80'}" alt="${escapeHTML(item.name)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80'">
       <div class="body-pad">
         <div class="flex between">
@@ -48,7 +56,7 @@ async function loadTestimonials() {
       return;
     }
     grid.innerHTML = feedback.slice(0, 6).map(f => `
-      <div class="testimonial-card reveal">
+      <div class="testimonial-card reveal visible">
         <div class="stars">${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}</div>
         <p>"${escapeHTML(f.message)}"</p>
         <div class="who">
