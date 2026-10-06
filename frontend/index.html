@@ -6,12 +6,11 @@
 <title>Cafe Point — Cafe Management &amp; Online Ordering</title>
 <meta name="description" content="Cafe Point — browse our menu, order online, book a table and enjoy fresh coffee, snacks and more.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="home-page">
 
-<!-- ============ NAVBAR ============ -->
 <nav class="navbar" id="navbar">
   <a href="index.html" class="brand"><span class="cup">☕</span> Cafe Point</a>
   <ul class="nav-links" id="navLinks">
@@ -22,66 +21,64 @@
     <li><a href="index.html#contact">Contact</a></li>
   </ul>
   <div class="nav-actions">
-    <a href="cart.html" class="nav-icon-btn">🛒<span class="cart-badge">0</span></a>
+    <a href="cart.html" class="nav-icon-btn" aria-label="Cart">🛒<span class="cart-badge">0</span></a>
     <div id="authArea"></div>
-    <button class="nav-toggle" id="navToggle">☰</button>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
   </div>
 </nav>
 
-<!-- ============ HERO ============ -->
 <header class="hero">
   <div class="hero-bg-orb orb-1"></div>
   <div class="hero-bg-orb orb-2"></div>
-  <div class="container">
-    <div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
       <div class="hero-eyebrow">Freshly Brewed • Since 2026</div>
       <h1>Where every cup tells <span>a warm story</span></h1>
       <p>Hand-crafted coffee, fresh bakes and comfort food — order online for pickup or delivery, or reserve your favourite table in seconds.</p>
       <div class="hero-actions">
         <a href="menu.html" class="btn btn-primary">Order Now →</a>
-        <a href="booking.html" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.5)">Book a Table</a>
+        <a href="booking.html" class="btn btn-ghost">Book a Table</a>
       </div>
       <div class="hero-stats">
         <div><strong>4.8★</strong><span>Customer Rating</span></div>
         <div><strong>15+</strong><span>Menu Categories</span></div>
       </div>
     </div>
-    <div class="hero-art">
-      <div style="width:340px;height:340px;border-radius:50%;background:radial-gradient(circle at 35% 30%, var(--gold-500), var(--coffee-700) 70%);display:flex;align-items:center;justify-content:center;font-size:120px;box-shadow:0 30px 60px rgba(0,0,0,.35);">☕</div>
-      <div class="floating-badge" style="top:10%;left:-10%;">🥐 <span>Fresh Bakes Daily</span></div>
-      <div class="floating-badge" style="bottom:8%;right:-8%;animation-delay:1s;">⭐ <span>Loved by 10,000+</span></div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="hero-cup">☕</div>
+      <div class="floating-badge badge-top">🥐 <span>Fresh Bakes Daily</span></div>
+      <div class="floating-badge badge-bottom">⭐ <span>Loved by 10,000+</span></div>
     </div>
   </div>
   <div class="scroll-cue">Scroll to explore<div class="line"></div></div>
 </header>
 
-<!-- ============ ABOUT ============ -->
-<section class="section" id="about">
-  <div class="container">
-    <div class="grid grid-2" style="align-items:center;gap:60px;">
-      <div class="reveal">
-        <div class="section-tag">Our Story</div>
-        <h2 class="section-title">A cozy corner built for coffee lovers</h2>
-        <p class="section-sub">Cafe Point started as a small neighbourhood counter with one promise — every cup, sandwich and dessert is made fresh, every single day. Today, we serve our community online and in-store with the same warmth.</p>
-        <div class="grid grid-2" style="gap:20px;">
-          <div class="card" style="padding:20px;"><h4 style="font-size:16px;">🌱 Farm-fresh Ingredients</h4><p class="text-muted" style="font-size:14px;margin-top:6px;">Sourced locally, prepared daily.</p></div>
-          <div class="card" style="padding:20px;"><h4 style="font-size:16px;">⚡ Fast Online Ordering</h4><p class="text-muted" style="font-size:14px;margin-top:6px;">Order in under a minute.</p></div>
-        </div>
-      </div>
-      <div class="reveal reveal-delay-1" style="display:flex;justify-content:center;">
-        <div style="width:100%;max-width:380px;aspect-ratio:1;border-radius:28px;background:linear-gradient(160deg,var(--cream-300),var(--gold-500));display:flex;align-items:center;justify-content:center;font-size:110px;box-shadow:var(--shadow-lg);">🧁</div>
-      </div>
+<section class="section about-section" id="about">
+  <div class="container about-grid">
+    <div class="about-copy reveal">
+      <div class="section-tag">Our Space</div>
+      <h2 class="section-title">A cozy corner built for coffee lovers</h2>
+      <p class="section-sub">Espresso, conversation, and a mural-lined room made for lingering. Every cup and bake is prepared fresh for you.</p>
+      <ul class="about-points">
+        <li><strong>Roasted for balance</strong> — smooth cups, never bitter</li>
+        <li><strong>Made to order</strong> — sandwiches, pizza &amp; sweets prepared fresh</li>
+        <li><strong>Easy online</strong> — browse, book, and pick up in minutes</li>
+      </ul>
+      <a href="menu.html" class="btn btn-dark mt-20">Explore the Menu</a>
+    </div>
+    <div class="about-visual reveal reveal-delay-1">
+      <img src="images/cafe-interior.png" alt="Cafe Point dining room with coffee wall art" class="about-photo">
     </div>
   </div>
 </section>
 
-<!-- ============ FEATURED MENU ============ -->
-<section class="section parallax-section" style="background:var(--cream-200);">
-  <div class="parallax-layer beans-layer"></div>
+<section class="section featured-section">
   <div class="container">
-    <div class="section-tag reveal">Fan Favourites</div>
-    <h2 class="section-title reveal">Our best sellers</h2>
-    <p class="section-sub reveal">A quick taste of what's waiting for you on the full menu.</p>
+    <div class="section-head reveal">
+      <div class="section-tag">Fan Favourites</div>
+      <h2 class="section-title">Our best sellers</h2>
+      <p class="section-sub">A quick taste of what's waiting on the full menu.</p>
+    </div>
     <div class="grid grid-4" id="featuredMenu"></div>
     <div class="center reveal" style="margin-top:40px;">
       <a href="menu.html" class="btn btn-dark">View Full Menu</a>
@@ -89,43 +86,48 @@
   </div>
 </section>
 
-<!-- ============ HOW IT WORKS ============ -->
 <section class="section dark-section">
   <div class="container">
     <div class="section-tag reveal">Simple Process</div>
     <h2 class="section-title reveal">How ordering works</h2>
-    <div class="grid grid-4" style="margin-top:40px;">
-      <div class="reveal card" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;">
-        <div style="font-size:34px;">1️⃣</div><h4 style="color:#fff;margin-top:10px;">Browse the Menu</h4><p style="color:rgba(255,255,255,.65);font-size:14px;margin-top:8px;">Explore categories and pick your favourites.</p>
+    <div class="process-row">
+      <div class="process-step reveal">
+        <span class="process-num">01</span>
+        <h4>Browse the Menu</h4>
+        <p>Explore categories and pick your favourites.</p>
       </div>
-      <div class="reveal reveal-delay-1 card" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;">
-        <div style="font-size:34px;">2️⃣</div><h4 style="color:#fff;margin-top:10px;">Register &amp; Add to Cart</h4><p style="color:rgba(255,255,255,.65);font-size:14px;margin-top:8px;">Quick sign-up with your contact details.</p>
+      <div class="process-step reveal reveal-delay-1">
+        <span class="process-num">02</span>
+        <h4>Add to Cart</h4>
+        <p>Quick sign-up with your contact details.</p>
       </div>
-      <div class="reveal reveal-delay-2 card" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;">
-        <div style="font-size:34px;">3️⃣</div><h4 style="color:#fff;margin-top:10px;">Checkout &amp; Pay</h4><p style="color:rgba(255,255,255,.65);font-size:14px;margin-top:8px;">Pay via UPI, card or cash on pickup.</p>
+      <div class="process-step reveal reveal-delay-2">
+        <span class="process-num">03</span>
+        <h4>Checkout &amp; Pay</h4>
+        <p>Pay via UPI, card or cash on pickup.</p>
       </div>
-      <div class="reveal reveal-delay-3 card" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;">
-        <div style="font-size:34px;">4️⃣</div><h4 style="color:#fff;margin-top:10px;">Track &amp; Enjoy</h4><p style="color:rgba(255,255,255,.65);font-size:14px;margin-top:8px;">Watch your order move to Ready!</p>
+      <div class="process-step reveal reveal-delay-3">
+        <span class="process-num">04</span>
+        <h4>Track &amp; Enjoy</h4>
+        <p>Watch your order move to Ready.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ BOOKING TEASER ============ -->
-<section class="section">
-  <div class="container">
-    <div class="card reveal" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;padding:44px;background:linear-gradient(120deg,var(--cream-300),var(--cream-100));">
-      <div>
-        <h3 style="font-size:26px;">Planning a visit? Reserve your table 🍽️</h3>
-        <p class="text-muted mt-10">Tell us the date, time and number of guests — we'll have your table ready.</p>
-      </div>
-      <a href="booking.html" class="btn btn-primary">Book a Table</a>
-    </div>
+<section class="section booking-banner">
+  <div class="booking-banner-bg" aria-hidden="true">
+    <img src="images/cafe-interior.png" alt="">
+  </div>
+  <div class="booking-banner-shade"></div>
+  <div class="container booking-banner-content reveal">
+    <h2>Planning a visit?</h2>
+    <p>Reserve your table — we'll have your spot ready when you arrive.</p>
+    <a href="booking.html" class="btn btn-primary">Book a Table</a>
   </div>
 </section>
 
-<!-- ============ TESTIMONIALS ============ -->
-<section class="section" id="testimonials" style="background:var(--cream-200);">
+<section class="section testimonials-section" id="testimonials">
   <div class="container">
     <div class="section-tag reveal">Testimonials</div>
     <h2 class="section-title reveal">What our guests say</h2>
@@ -135,57 +137,61 @@
   </div>
 </section>
 
-<!-- ============ FEEDBACK FORM ============ -->
 <section class="section" id="feedback">
-  <div class="container">
-    <div class="grid grid-2" style="gap:50px;align-items:center;">
-      <div class="reveal">
-        <div class="section-tag">Tell Us Something</div>
-        <h2 class="section-title">Share your feedback</h2>
-        <p class="section-sub">Loved your visit, or think we can do better? We read every single message.</p>
+  <div class="container feedback-layout">
+    <div class="reveal">
+      <div class="section-tag">Tell Us Something</div>
+      <h2 class="section-title">Share your feedback</h2>
+      <p class="section-sub">Loved your visit, or think we can do better? We read every message.</p>
+    </div>
+    <form class="form-card reveal reveal-delay-1" id="feedbackForm">
+      <div class="form-alert" id="feedbackAlert"></div>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" name="name" id="fbName" placeholder="e.g. Aarav Sharma" required>
       </div>
-      <form class="form-card reveal reveal-delay-1" id="feedbackForm" style="max-width:100%;">
-        <div class="form-alert" id="feedbackAlert"></div>
-        <div class="form-group">
-          <label>Your Name</label>
-          <input type="text" name="name" id="fbName" placeholder="e.g. Aarav Sharma" required>
-        </div>
-        <div class="form-group">
-          <label>Email (optional)</label>
-          <input type="email" name="email" id="fbEmail" placeholder="you@example.com">
-        </div>
-        <div class="form-group">
-          <label>Rating</label>
-          <select name="rating" id="fbRating">
-            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
-            <option value="4">⭐⭐⭐⭐ Good</option>
-            <option value="3">⭐⭐⭐ Average</option>
-            <option value="2">⭐⭐ Poor</option>
-            <option value="1">⭐ Very Poor</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Your Message</label>
-          <textarea name="message" id="fbMessage" placeholder="Tell us about your experience..." required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block" id="fbSubmitBtn">Submit Feedback</button>
-      </form>
-    </div>
+      <div class="form-group">
+        <label>Email (optional)</label>
+        <input type="email" name="email" id="fbEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Rating</label>
+        <select name="rating" id="fbRating">
+          <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+          <option value="4">⭐⭐⭐⭐ Good</option>
+          <option value="3">⭐⭐⭐ Average</option>
+          <option value="2">⭐⭐ Poor</option>
+          <option value="1">⭐ Very Poor</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Your Message</label>
+        <textarea name="message" id="fbMessage" placeholder="Tell us about your experience..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="fbSubmitBtn">Submit Feedback</button>
+    </form>
   </div>
 </section>
 
-<!-- ============ CONTACT ============ -->
-<section class="section dark-section" id="contact">
+<section class="section dark-section contact-section" id="contact">
   <div class="container">
-    <div class="grid grid-3">
-      <div class="reveal"><h4 style="color:var(--gold-500);font-size:14px;letter-spacing:2px;">📍 VISIT US</h4><p style="color:rgba(255,255,255,.75);margin-top:10px;">Cafe Point, MG Road,<br>Shirdi, Maharashtra, India</p></div>
-      <div class="reveal reveal-delay-1"><h4 style="color:var(--gold-500);font-size:14px;letter-spacing:2px;">📞 CALL / WHATSAPP</h4><p style="color:rgba(255,255,255,.75);margin-top:10px;">+91 84596 62016<br>Mon – Sun, 8 AM – 10 PM</p></div>
-      <div class="reveal reveal-delay-2"><h4 style="color:var(--gold-500);font-size:14px;letter-spacing:2px;">✉️ EMAIL</h4><p style="color:rgba(255,255,255,.75);margin-top:10px;">hello@cafepoint.example<br>We reply within a day</p></div>
+    <div class="contact-grid">
+      <div class="contact-item reveal">
+        <h4>Visit Us</h4>
+        <p>Cafe Point, MG Road<br>Shirdi, Maharashtra, India</p>
+      </div>
+      <div class="contact-item reveal reveal-delay-1">
+        <h4>Call / WhatsApp</h4>
+        <p>+91 84596 62016<br>Mon – Sun, 8 AM – 10 PM</p>
+      </div>
+      <div class="contact-item reveal reveal-delay-2">
+        <h4>Email</h4>
+        <p>hello@cafepoint.example<br>We reply within a day</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============ FOOTER ============ -->
 <footer class="footer">
   <div class="container">
     <div class="grid">
@@ -197,7 +203,7 @@
       <div><h4>Account</h4><a href="login.html">Login</a><a href="register.html">Register</a><a href="my-orders.html">My Orders</a></div>
       <div><h4>Contact</h4><a href="tel:+918459662016">+91 84596 62016</a><a href="#contact">Shirdi, Maharashtra</a></div>
     </div>
-    <div class="footer-bottom">© 2026 Cafe Point. All rights reserved. Built with ❤️ for coffee lovers.</div>
+    <div class="footer-bottom">© 2026 Cafe Point. All rights reserved.</div>
   </div>
 </footer>
 
