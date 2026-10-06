@@ -21,6 +21,10 @@ function cartTotal() {
   return getCart().reduce((sum, i) => sum + i.price * i.quantity, 0);
 }
 function addToCart(item) {
+  if (item.is_available === false || item.is_available === 0) {
+    toast(`${item.name} is out of stock`, 'error');
+    return;
+  }
   const cart = getCart();
   const existing = cart.find(i => i.id === item.id);
   if (existing) {
@@ -34,6 +38,10 @@ function addToCart(item) {
 
 /** Add item and go straight to checkout (direct order). */
 function orderNow(item) {
+  if (item.is_available === false || item.is_available === 0) {
+    toast(`${item.name} is out of stock`, 'error');
+    return;
+  }
   if (!isLoggedIn()) {
     // Keep the item in cart so checkout is ready after login
     const cart = getCart();

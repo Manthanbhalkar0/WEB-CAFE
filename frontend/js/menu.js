@@ -58,8 +58,16 @@ function renderMenu() {
     return;
   }
 
-  grid.innerHTML = items.map(item => `
-    <div class="card menu-card reveal visible">
+  grid.innerHTML = items.map(menuCardHTML).join('');
+}
+
+function menuCardHTML(item) {
+  const inStock = !!Number(item.is_available);
+  const payload = JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image, is_available: inStock }).replace(/'/g, '&apos;');
+
+  return `
+    <div class="card menu-card reveal visible ${inStock ? '' : 'is-out-of-stock'}">
+      ${inStock ? '' : '<span class="oos-badge">Out of Stock</span>'}
       <img class="photo" src="${escapeHTML(item.image) || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80'}" alt="${escapeHTML(item.name)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80'">
       <div class="body-pad">
         <div class="flex between">
@@ -70,13 +78,15 @@ function renderMenu() {
         <div class="row menu-actions">
           <span class="price-tag">${formatMoney(item.price)}</span>
           <div class="menu-btns">
-            <button type="button" class="btn btn-outline btn-sm" onclick='addToCart(${JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image }).replace(/'/g, "&apos;")})'>Add</button>
-            <button type="button" class="btn btn-primary btn-sm" onclick='orderNow(${JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image }).replace(/'/g, "&apos;")})'>Order Now</button>
+            ${inStock
+              ? `<button type="button" class="btn btn-outline btn-sm" onclick='addToCart(${payload})'>Add</button>
+                 <button type="button" class="btn btn-primary btn-sm" onclick='orderNow(${payload})'>Order Now</button>`
+              : `<button type="button" class="btn btn-outline btn-sm" disabled>Unavailable</button>`}
           </div>
         </div>
       </div>
     </div>
-  `).join('');
+  `;
 }
 
 function debounce(fn, delay) {

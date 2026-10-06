@@ -129,13 +129,18 @@ async function loadMenuAdmin() {
     const items = await api('/menu/admin/all', { auth: true });
     if (!items.length) { tbody.innerHTML = `<tr><td colspan="6">No products yet.</td></tr>`; return; }
     tbody.innerHTML = items.map(i => `
-      <tr>
+      <tr class="${i.is_available ? '' : 'row-oos'}">
         <td class="flex gap-10"><span class="emoji-badge" style="width:34px;height:34px;"><img src="${i.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&q=80'}" alt=""></span> ${i.name}</td>
         <td>${i.category}</td>
         <td><input type="number" value="${i.price}" style="width:90px;padding:6px 8px;" onchange="quickPriceChange(${i.id}, this.value)"></td>
         <td>${i.is_veg ? '🟢' : '🔴'}</td>
-        <td>${i.is_available ? '✅' : '⛔'}</td>
         <td>
+          <span class="badge ${i.is_available ? 'badge-paid' : 'badge-cancelled'}">${i.is_available ? 'In Stock' : 'Out of Stock'}</span>
+        </td>
+        <td>
+          <button class="btn btn-sm ${i.is_available ? 'btn-outline' : 'btn-primary'}" title="Toggle stock" onclick="toggleStock(${i.id}, ${i.is_available ? 0 : 1})">
+            ${i.is_available ? 'Mark Out of Stock' : 'Mark In Stock'}
+          </button>
           <button class="icon-btn" title="Edit" onclick='openProductModal(${JSON.stringify(i).replace(/'/g, "&apos;")})'>✏️</button>
           <button class="icon-btn" title="Delete" onclick="deleteProduct(${i.id}, '${i.name.replace(/'/g, "\\'")}')">🗑️</button>
         </td>
@@ -150,6 +155,18 @@ async function quickPriceChange(id, price) {
   try {
     await api(`/menu/${id}/price`, { method: 'PATCH', auth: true, body: { price } });
     toast('Price updated', 'success');
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function toggleStock(id, makeAvailable) {
+  try {
+    const data = await api(`/menu/${id}/availability`, {
+      method: 'PATCH',
+      auth: true,
+      body: { is_available: !!makeAvailable }
+    });
+    toast(data.message || 'Stock updated', 'success');
+    loadMenuAdmin();
   } catch (err) { toast(err.message, 'error'); }
 }
 

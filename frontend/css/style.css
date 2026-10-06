@@ -185,6 +185,15 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; color: var(
   border-radius: var(--radius) var(--radius) 0 0; margin-bottom: 4px;
 }
 .menu-card .body-pad { padding: 0 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.menu-card.is-out-of-stock .photo { filter: grayscale(0.85) brightness(0.92); }
+.menu-card.is-out-of-stock h4,
+.menu-card.is-out-of-stock .price-tag { color: var(--muted); }
+.oos-badge {
+  position: absolute; top: 14px; left: 14px; z-index: 2;
+  background: var(--red-600); color: #fff; font-size: 11px; font-weight: 700;
+  letter-spacing: .4px; text-transform: uppercase; padding: 6px 12px; border-radius: 6px;
+}
+.row-oos td { opacity: 0.78; }
 /* Small round photo used in tighter contexts (cart rows, admin table) */
 .emoji-badge {
   width: 52px; height: 52px; border-radius: 50%; background: var(--cream-300);
