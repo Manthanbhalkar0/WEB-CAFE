@@ -34,11 +34,14 @@ router.post('/', requireAuth, async (req, res) => {
         throw { status: 400, message: 'Each item needs a valid product and quantity.' };
       }
       const [rows] = await connection.query(
-        'SELECT * FROM menu_items WHERE id = ? AND is_available = 1',
+        'SELECT * FROM menu_items WHERE id = ?',
         [it.menu_item_id]
       );
       if (rows.length === 0) {
-        throw { status: 400, message: `One of the items in your cart is no longer available.` };
+        throw { status: 400, message: 'One of the items in your cart is no longer on the menu.' };
+      }
+      if (!rows[0].is_available) {
+        throw { status: 400, message: `"${rows[0].name}" is currently out of stock.` };
       }
       const menuItem = rows[0];
       const lineTotal = Number(menuItem.price) * Number(it.quantity);
