@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Cart — Cafe Point</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart — Cafe Point</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -41,18 +41,18 @@
 <script src="js/cart.js"></script>
 <script src="js/main.js"></script>
 <script>
-function renderCartPage() {
-  const cart = getCart();
-  const list = document.getElementById('cartList');
-  const summary = document.getElementById('cartSummary');
+  function renderCartPage() {
+    const cart = getCart();
+    const list = document.getElementById('cartList');
+    const summary = document.getElementById('cartSummary');
 
-  if (!cart.length) {
-    list.innerHTML = `<div class="empty-state"><div class="big-icon">🛒</div><p>Your cart is empty.</p><a href="menu.html" class="btn btn-primary mt-20">Browse Menu</a></div>`;
-    summary.innerHTML = '';
-    return;
-  }
+    if (!cart.length) {
+      list.innerHTML = `<div class="empty-state"><div class="big-icon">🛒</div><p>Your cart is empty.</p><a href="menu.html" class="btn btn-primary mt-20">Browse Menu</a></div>`;
+      summary.innerHTML = '';
+      return;
+    }
 
-  list.innerHTML = cart.map(item => `
+    list.innerHTML = cart.map(item => `
     <div class="cart-item">
       <div class="emoji-badge"><img src="${item.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&q=80'}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&q=80'"></div>
       <div class="info">
@@ -72,8 +72,8 @@ function renderCartPage() {
     </div>
   `).join('');
 
-  const total = cartTotal();
-  summary.innerHTML = `
+    const total = cartTotal();
+    summary.innerHTML = `
     <h3 style="margin-bottom:20px;">Order Summary</h3>
     <div class="summary-row"><span>Items (${cartCount()})</span><span>${formatMoney(total)}</span></div>
     <div class="summary-row"><span>Delivery / Packing</span><span>Free</span></div>
@@ -81,8 +81,8 @@ function renderCartPage() {
     <a href="checkout.html" class="btn btn-primary btn-block mt-20">Proceed to Checkout →</a>
     <a href="menu.html" class="btn btn-outline btn-block mt-10">Add More Items</a>
   `;
-}
-document.addEventListener('DOMContentLoaded', renderCartPage);
+  }
+  document.addEventListener('DOMContentLoaded', renderCartPage);
 </script>
 </body>
 </html>
