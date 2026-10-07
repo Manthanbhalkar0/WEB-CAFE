@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login — Cafe Point</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Cafe Point</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body style="background:linear-gradient(160deg,var(--coffee-900),var(--coffee-700));min-height:100vh;">
 
@@ -43,62 +43,62 @@
 <script src="js/api.js"></script>
 <script src="js/cart.js"></script>
 <script>
-(function prefillRemembered() {
-  const email = getRememberedEmail();
-  if (email) {
-    document.getElementById('email').value = email;
-    document.getElementById('rememberMe').checked = true;
-  }
-})();
+  (function prefillRemembered() {
+    const email = getRememberedEmail();
+    if (email) {
+      document.getElementById('email').value = email;
+      document.getElementById('rememberMe').checked = true;
+    }
+  })();
 
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const alertBox = document.getElementById('loginAlert');
-  const btn = document.getElementById('loginBtn');
-  alertBox.className = 'form-alert';
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const alertBox = document.getElementById('loginAlert');
+    const btn = document.getElementById('loginBtn');
+    alertBox.className = 'form-alert';
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const rememberMe = document.getElementById('rememberMe').checked;
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const rememberMe = document.getElementById('rememberMe').checked;
 
-  const clientError = validateLoginForm({ email, password });
-  if (clientError) {
-    alertBox.className = 'form-alert error';
-    alertBox.textContent = clientError;
-    return;
-  }
-
-  btn.disabled = true; btn.textContent = 'Logging in...';
-  try {
-    const data = await api('/auth/login', { method: 'POST', body: { email, password } });
-    setSession(data.token, data.user);
-
-    if (rememberMe) {
-      saveRememberedEmail(email);
-    } else {
-      clearRememberedEmail();
+    const clientError = validateLoginForm({ email, password });
+    if (clientError) {
+      alertBox.className = 'form-alert error';
+      alertBox.textContent = clientError;
+      return;
     }
 
-    alertBox.className = 'form-alert success';
-    alertBox.textContent = 'Login successful! Redirecting...';
+    btn.disabled = true; btn.textContent = 'Logging in...';
+    try {
+      const data = await api('/auth/login', { method: 'POST', body: { email, password } });
+      setSession(data.token, data.user);
 
-    const params = new URLSearchParams(location.search);
-    const next = params.get('next');
-    setTimeout(() => {
-      const role = String(data.user?.role || '').toUpperCase();
-      if (role === 'ADMIN') {
-        window.location.href = 'admin.html';
+      if (rememberMe) {
+        saveRememberedEmail(email);
       } else {
-        window.location.href = next && !next.includes('login') ? next : 'index.html';
+        clearRememberedEmail();
       }
-    }, 700);
-  } catch (err) {
-    alertBox.className = 'form-alert error';
-    alertBox.textContent = err.message;
-  } finally {
-    btn.disabled = false; btn.textContent = 'Login';
-  }
-});
+
+      alertBox.className = 'form-alert success';
+      alertBox.textContent = 'Login successful! Redirecting...';
+
+      const params = new URLSearchParams(location.search);
+      const next = params.get('next');
+      setTimeout(() => {
+        const role = String(data.user?.role || '').toUpperCase();
+        if (role === 'ADMIN') {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = next && !next.includes('login') ? next : 'index.html';
+        }
+      }, 700);
+    } catch (err) {
+      alertBox.className = 'form-alert error';
+      alertBox.textContent = err.message;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Login';
+    }
+  });
 </script>
 </body>
 </html>
