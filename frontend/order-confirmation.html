@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Order Confirmed — Cafe Point</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — Cafe Point</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -28,19 +28,19 @@
 <script src="js/cart.js"></script>
 <script src="js/main.js"></script>
 <script>
-const STATUS_STEPS = ['RECEIVED', 'PREPARING', 'READY', 'COMPLETED'];
+  const STATUS_STEPS = ['RECEIVED', 'PREPARING', 'READY', 'COMPLETED'];
 
-async function loadConfirmation() {
-  const params = new URLSearchParams(location.search);
-  const orderId = params.get('orderId');
-  const body = document.getElementById('confirmationBody');
-  if (!orderId) { body.innerHTML = `<p class="text-muted">No order specified.</p>`; return; }
+  async function loadConfirmation() {
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get('orderId');
+    const body = document.getElementById('confirmationBody');
+    if (!orderId) { body.innerHTML = `<p class="text-muted">No order specified.</p>`; return; }
 
-  try {
-    const order = await api(`/orders/${orderId}`);
-    const stepIndex = STATUS_STEPS.indexOf(order.status);
+    try {
+      const order = await api(`/orders/${orderId}`);
+      const stepIndex = STATUS_STEPS.indexOf(order.status);
 
-    body.innerHTML = `
+      body.innerHTML = `
       <div class="center reveal visible">
         <div style="font-size:60px;">✅</div>
         <h2 class="section-title">Order Placed Successfully!</h2>
@@ -69,11 +69,11 @@ async function loadConfirmation() {
         <a href="my-orders.html" class="btn btn-primary" style="margin-left:12px;">View My Orders</a>
       </div>
     `;
-  } catch (err) {
-    body.innerHTML = `<p class="text-muted">${err.message}</p>`;
+    } catch (err) {
+      body.innerHTML = `<p class="text-muted">${err.message}</p>`;
+    }
   }
-}
-document.addEventListener('DOMContentLoaded', loadConfirmation);
+  document.addEventListener('DOMContentLoaded', loadConfirmation);
 </script>
 </body>
 </html>
