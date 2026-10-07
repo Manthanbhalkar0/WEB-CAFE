@@ -137,8 +137,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; color: var(
 .hero::before {
   content: ''; position: absolute; inset: 0;
   background-image:
-    radial-gradient(circle at 20% 20%, rgba(217,164,65,.18), transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(217,164,65,.12), transparent 45%);
+          radial-gradient(circle at 20% 20%, rgba(217,164,65,.18), transparent 40%),
+          radial-gradient(circle at 85% 75%, rgba(217,164,65,.12), transparent 45%);
   pointer-events: none;
 }
 .hero-bg-orb {
@@ -305,9 +305,9 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; color: var(
 }
 .featured-section {
   background:
-    radial-gradient(circle at 10% 20%, rgba(217,164,65,.12), transparent 35%),
-    radial-gradient(circle at 90% 80%, rgba(92,58,38,.08), transparent 40%),
-    var(--cream-200);
+          radial-gradient(circle at 10% 20%, rgba(217,164,65,.12), transparent 35%),
+          radial-gradient(circle at 90% 80%, rgba(92,58,38,.08), transparent 40%),
+          var(--cream-200);
 }
 
 /* Process steps (no card clutter) */
