@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register — Cafe Point</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — Cafe Point</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body style="background:linear-gradient(160deg,var(--coffee-900),var(--coffee-700));min-height:100vh;">
 
@@ -63,61 +63,61 @@
 <script src="js/api.js"></script>
 <script src="js/cart.js"></script>
 <script>
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const alertBox = document.getElementById('regAlert');
-  const btn = document.getElementById('regBtn');
-  alertBox.className = 'form-alert';
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const alertBox = document.getElementById('regAlert');
+    const btn = document.getElementById('regBtn');
+    alertBox.className = 'form-alert';
 
-  const payload = {
-    name: document.getElementById('name').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
-    address: document.getElementById('address').value.trim(),
-    password: document.getElementById('password').value,
-    confirmPassword: document.getElementById('confirmPassword').value
-  };
+    const payload = {
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      password: document.getElementById('password').value,
+      confirmPassword: document.getElementById('confirmPassword').value
+    };
 
-  const clientError = validateRegisterForm(payload);
-  if (clientError) {
-    alertBox.className = 'form-alert error';
-    alertBox.textContent = clientError;
-    return;
-  }
-
-  btn.disabled = true; btn.textContent = 'Creating account...';
-  try {
-    const data = await api('/auth/register', {
-      method: 'POST',
-      body: {
-        name: payload.name,
-        email: payload.email,
-        phone: payload.phone,
-        address: payload.address,
-        password: payload.password
-      }
-    });
-
-    setSession(data.token, data.user);
-
-    if (document.getElementById('rememberMe').checked) {
-      saveRememberedEmail(payload.email);
-    } else {
-      clearRememberedEmail();
+    const clientError = validateRegisterForm(payload);
+    if (clientError) {
+      alertBox.className = 'form-alert error';
+      alertBox.textContent = clientError;
+      return;
     }
 
-    alertBox.className = 'form-alert success';
-    alertBox.textContent = data.message || 'Account created! Redirecting...';
-    document.getElementById('registerForm').reset();
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    try {
+      const data = await api('/auth/register', {
+        method: 'POST',
+        body: {
+          name: payload.name,
+          email: payload.email,
+          phone: payload.phone,
+          address: payload.address,
+          password: payload.password
+        }
+      });
 
-    setTimeout(() => (window.location.href = 'index.html'), 700);
-  } catch (err) {
-    alertBox.className = 'form-alert error';
-    alertBox.textContent = err.message;
-  } finally {
-    btn.disabled = false; btn.textContent = 'Create Account';
-  }
-});
+      setSession(data.token, data.user);
+
+      if (document.getElementById('rememberMe').checked) {
+        saveRememberedEmail(payload.email);
+      } else {
+        clearRememberedEmail();
+      }
+
+      alertBox.className = 'form-alert success';
+      alertBox.textContent = data.message || 'Account created! Redirecting...';
+      document.getElementById('registerForm').reset();
+
+      setTimeout(() => (window.location.href = 'index.html'), 700);
+    } catch (err) {
+      alertBox.className = 'form-alert error';
+      alertBox.textContent = err.message;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create Account';
+    }
+  });
 </script>
 </body>
 </html>
