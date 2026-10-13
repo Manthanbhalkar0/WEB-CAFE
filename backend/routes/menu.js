@@ -11,8 +11,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { category, veg, search } = req.query;
-    // Include out-of-stock items so customers can see them (frontend disables ordering)
-    let sql = 'SELECT * FROM menu_items WHERE 1=1';
+    let sql = 'SELECT * FROM menu_items WHERE is_available = 1';
     const params = [];
 
     if (category) {
@@ -26,7 +25,7 @@ router.get('/', async (req, res) => {
       sql += ' AND (name LIKE ? OR description LIKE ?)';
       params.push(`%${search}%`, `%${search}%`);
     }
-    sql += ' ORDER BY is_available DESC, category, name';
+    sql += ' ORDER BY category, name';
 
     const [rows] = await pool.query(sql, params);
     res.json(rows);
@@ -40,7 +39,7 @@ router.get('/', async (req, res) => {
 router.get('/categories', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT DISTINCT category FROM menu_items ORDER BY category'
+      'SELECT DISTINCT category FROM menu_items WHERE is_available = 1 ORDER BY category'
     );
     res.json(rows.map(r => r.category));
   } catch (err) {
@@ -55,7 +54,7 @@ router.get('/categories', async (req, res) => {
 // POST /api/menu  - admin adds a new product
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
-    let { category, name, description, price, is_veg, image, is_available } = req.body;
+    let { category, name, description, price, is_veg, image } = req.body;
     if (!category || !name || price === undefined) {
       return res.status(400).json({ error: 'Category, name and price are required.' });
     }
@@ -63,11 +62,10 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Price must be a positive number.' });
     }
 
-    const available = is_available === undefined ? 1 : (is_available ? 1 : 0);
     const [result] = await pool.query(
       `INSERT INTO menu_items (category, name, description, price, is_veg, image, is_available)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [category, name, description || '', price, is_veg ? 1 : 0, image || '☕', available]
+       VALUES (?, ?, ?, ?, ?, ?, 1)`,
+      [category, name, description || '', price, is_veg ? 1 : 0, image || '☕']
     );
     res.status(201).json({ message: 'Product added successfully.', id: result.insertId });
   } catch (err) {
@@ -119,28 +117,6 @@ router.patch('/:id/price', requireAuth, requireAdmin, async (req, res) => {
     res.json({ message: 'Price updated successfully.' });
   } catch (err) {
     res.status(500).json({ error: 'Could not update the price.' });
-  }
-});
-
-// PATCH /api/menu/:id/availability - quick in-stock / out-of-stock toggle
-router.patch('/:id/availability', requireAuth, requireAdmin, async (req, res) => {
-  try {
-    const { is_available } = req.body;
-    if (typeof is_available !== 'boolean' && is_available !== 0 && is_available !== 1) {
-      return res.status(400).json({ error: 'is_available must be true or false.' });
-    }
-    const available = is_available ? 1 : 0;
-    const [result] = await pool.query(
-      'UPDATE menu_items SET is_available=? WHERE id=?',
-      [available, req.params.id]
-    );
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Product not found.' });
-    res.json({
-      message: available ? 'Product marked in stock.' : 'Product marked out of stock.',
-      is_available: available
-    });
-  } catch (err) {
-    res.status(500).json({ error: 'Could not update availability.' });
   }
 });
 
