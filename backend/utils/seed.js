@@ -28,6 +28,20 @@ async function seed() {
 
   await connection.changeUser({ database: process.env.DB_NAME || 'cafe_point' });
 
+  // Safe migrations for databases created before newer columns existed
+  const migrations = [
+    `ALTER TABLE feedback ADD COLUMN feedback_type ENUM('CAFE','PRODUCT','BOTH') NOT NULL DEFAULT 'CAFE'`,
+    `ALTER TABLE feedback ADD COLUMN image VARCHAR(500) DEFAULT NULL`
+  ];
+  for (const sql of migrations) {
+    try {
+      await connection.query(sql);
+      console.log(`✅ Applied: ${sql.slice(0, 60)}...`);
+    } catch (err) {
+      if (err.code !== 'ER_DUP_FIELDNAME') throw err;
+    }
+  }
+
   const adminName = process.env.ADMIN_NAME || 'Cafe Point Admin';
   const adminEmail = (process.env.ADMIN_EMAIL || 'admin@cafepoint.com').toLowerCase();
   const adminPassword = process.env.ADMIN_PASSWORD || 'Cp#Admin9xK7mQ!';

@@ -77,8 +77,10 @@ function validateLoginForm({ email, password }) {
   return null;
 }
 
-async function api(path, { method = 'GET', body, auth = false } = {}) {
-  const headers = { 'Content-Type': 'application/json' };
+async function api(path, { method = 'GET', body, auth = false, formData = null } = {}) {
+  const headers = {};
+  // Let the browser set multipart boundary when sending FormData
+  if (!formData) headers['Content-Type'] = 'application/json';
   if (auth) {
     const token = getToken();
     if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -88,7 +90,7 @@ async function api(path, { method = 'GET', body, auth = false } = {}) {
     res = await fetch(`${API_BASE}${path}`, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined
+      body: formData || (body ? JSON.stringify(body) : undefined)
     });
   } catch (networkErr) {
     throw new Error('Cannot reach the server. Please check your connection and that the backend is running.');

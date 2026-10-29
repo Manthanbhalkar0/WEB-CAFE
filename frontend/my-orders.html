@@ -76,6 +76,27 @@ async function loadOrders() {
   }
 }
 
+function formatBookingTime(time) {
+  if (!time) return '';
+  const parts = String(time).split(':');
+  if (parts.length < 2) return time;
+  let h = Number(parts[0]);
+  const m = parts[1];
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${m} ${ampm}`;
+}
+
+function formatBookingDate(dateStr) {
+  try {
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-IN', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    });
+  } catch (e) {
+    return dateStr;
+  }
+}
+
 async function loadBookings() {
   const panel = document.getElementById('bookingsPanel');
   try {
@@ -84,16 +105,79 @@ async function loadBookings() {
       panel.innerHTML = `<div class="empty-state"><div class="big-icon">🍽️</div><p>No table bookings yet.</p><a href="booking.html" class="btn btn-primary mt-20">Book a Table</a></div>`;
       return;
     }
-    panel.innerHTML = bookings.map(b => `
-      <div class="card mt-20">
-        <div class="flex between"><h4>Booking #${b.id}</h4><span class="badge badge-${b.status.toLowerCase()}">${b.status}</span></div>
-        <p class="text-muted mt-10">${b.date} at ${b.time} • ${b.guests} guests</p>
-        ${b.notes ? `<p class="mt-10">📝 ${b.notes}</p>` : ''}
-      </div>
-    `).join('');
+    panel.innerHTML = bookings.map(b => {
+      const isCancelled = String(b.status).toUpperCase() === 'CANCELLED';
+      const canCancel = !isCancelled && ['PENDING', 'CONFIRMED'].includes(String(b.status).toUpperCase());
+      return `
+      <div class="booking-card card mt-20 ${isCancelled ? 'booking-cancelled' : ''}" id="booking-card-${b.id}">
+        ${isCancelled ? `
+          <div class="booking-cancelled-banner">
+            <span class="booking-cancelled-icon">✕</span>
+            <div>
+              <strong>Booking Cancelled</strong>
+              <p>This table reservation is no longer active.</p>
+            </div>
+          </div>` : ''}
+        <div class="flex between" style="align-items:flex-start;gap:12px;">
+          <div>
+            <h4 style="margin:0;">Booking #${b.id}</h4>
+            <p class="text-muted" style="margin-top:6px;font-size:13px;">Reserved for ${escapeHTML(b.name || 'you')}</p>
+          </div>
+          <span class="badge badge-${b.status.toLowerCase()}">${b.status}</span>
+        </div>
+        <div class="booking-meta mt-20">
+          <div class="booking-meta-item">
+            <span class="booking-meta-label">Date</span>
+            <span class="booking-meta-value">${formatBookingDate(b.date)}</span>
+          </div>
+          <div class="booking-meta-item">
+            <span class="booking-meta-label">Time</span>
+            <span class="booking-meta-value">${formatBookingTime(b.time)}</span>
+          </div>
+          <div class="booking-meta-item">
+            <span class="booking-meta-label">Guests</span>
+            <span class="booking-meta-value">${b.guests} ${Number(b.guests) === 1 ? 'guest' : 'guests'}</span>
+          </div>
+        </div>
+        ${b.notes ? `<p class="booking-notes mt-10">📝 ${escapeHTML(b.notes)}</p>` : ''}
+        <div class="booking-actions mt-20">
+          ${canCancel ? `
+            <button type="button" class="btn btn-outline btn-sm btn-cancel-booking" onclick="cancelBooking(${b.id})">
+              Cancel Booking
+            </button>` : ''}
+          ${isCancelled ? `
+            <a href="booking.html" class="btn btn-primary btn-sm">Book Again</a>
+            <p class="booking-cancelled-note">Need a table? You can make a new reservation anytime.</p>` : ''}
+        </div>
+      </div>`;
+    }).join('');
   } catch (err) {
     panel.innerHTML = `<p class="text-muted">${err.message}</p>`;
   }
+}
+
+async function cancelBooking(id) {
+  const ok = window.confirm('Cancel this table booking? You can always reserve again later.');
+  if (!ok) return;
+
+  const card = document.getElementById(`booking-card-${id}`);
+  const btn = card?.querySelector('.btn-cancel-booking');
+  if (btn) { btn.disabled = true; btn.textContent = 'Cancelling...'; }
+
+  try {
+    const data = await api(`/bookings/${id}/cancel`, { method: 'PUT', auth: true });
+    toast(data.message || 'Booking cancelled.', 'success');
+    await loadBookings();
+  } catch (err) {
+    toast(err.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Cancel Booking'; }
+  }
+}
+
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
 }
 </script>
 </body>

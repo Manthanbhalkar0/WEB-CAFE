@@ -16,3 +16,7 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
+
+# Customer-uploaded feedback photos (keep folder via .gitkeep)
+frontend/uploads/feedback/*
+!frontend/uploads/feedback/.gitkeep

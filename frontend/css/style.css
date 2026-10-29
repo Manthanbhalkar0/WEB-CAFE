@@ -498,6 +498,76 @@ textarea { resize: vertical; min-height: 90px; }
 .testimonial-card .stars { color: var(--gold-500); margin-bottom: 10px; letter-spacing: 2px; }
 .testimonial-card .who { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
 .avatar-circle { width: 40px; height: 40px; border-radius: 50%; background: var(--coffee-700); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.fb-type-chip {
+  display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px; background: var(--cream-300); color: var(--coffee-800); white-space: nowrap;
+}
+.fb-review-photo {
+  width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin: 12px 0 4px;
+  background: var(--cream-200);
+}
+
+/* -------------------- Feedback image upload -------------------- */
+.fb-upload {
+  border: 2px dashed #e0cba8; border-radius: var(--radius-sm); padding: 20px; text-align: center;
+  background: linear-gradient(180deg, #fffaf3, #fff); transition: border-color .2s, background .2s; cursor: pointer;
+}
+.fb-upload:hover { border-color: var(--gold-500); background: #fff8ec; }
+.fb-upload-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+.fb-upload-idle p { margin: 0 0 4px; font-size: 14px; color: var(--coffee-800); }
+.fb-upload-idle .btn { margin-top: 10px; }
+.fb-upload-preview { position: relative; }
+.fb-upload-preview img {
+  width: 100%; max-height: 220px; object-fit: cover; border-radius: 12px; display: block;
+  box-shadow: var(--shadow);
+}
+.fb-remove-img {
+  position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border: none; border-radius: 50%;
+  background: rgba(43, 24, 16, .78); color: #fff; font-size: 20px; line-height: 1; cursor: pointer;
+}
+.fb-remove-img:hover { background: var(--red-600); }
+
+/* -------------------- Customer bookings -------------------- */
+.booking-card { position: relative; overflow: hidden; transition: box-shadow .25s ease, transform .25s ease; }
+.booking-card:hover { box-shadow: var(--shadow-lg); }
+.booking-meta {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  background: var(--cream-200); border-radius: 12px; padding: 14px 16px;
+}
+.booking-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.booking-meta-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+.booking-meta-value { font-size: 14px; font-weight: 600; color: var(--coffee-800); }
+.booking-notes { font-size: 14px; color: var(--ink); }
+.booking-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.btn-cancel-booking {
+  border-color: #e8b4a8 !important; color: var(--red-600) !important;
+}
+.btn-cancel-booking:hover {
+  background: #fbe6e0 !important; border-color: var(--red-600) !important;
+}
+.booking-cancelled {
+  background: linear-gradient(180deg, #fff7f4 0%, #fff 55%);
+  border: 1px solid #f0cfc6;
+  opacity: .96;
+}
+.booking-cancelled-banner {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: linear-gradient(135deg, #fbe6e0, #fff2ee);
+  border: 1px solid #f0cfc6; border-radius: 12px;
+  padding: 14px 16px; margin-bottom: 16px;
+}
+.booking-cancelled-icon {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  background: var(--red-600); color: #fff; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px;
+}
+.booking-cancelled-banner strong { display: block; color: var(--red-600); font-size: 15px; }
+.booking-cancelled-banner p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.booking-cancelled-note { margin: 0; font-size: 13px; color: var(--muted); width: 100%; }
+.booking-cancelled .booking-meta { opacity: .72; filter: grayscale(.15); }
+@media (max-width: 560px) {
+  .booking-meta { grid-template-columns: 1fr; }
+}
 
 /* -------------------- Footer -------------------- */
 .footer { background: var(--coffee-900); color: rgba(255,255,255,.75); padding: 70px 0 20px; }

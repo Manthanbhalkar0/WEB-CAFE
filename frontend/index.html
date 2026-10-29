@@ -142,7 +142,7 @@
     <div class="reveal">
       <div class="section-tag">Tell Us Something</div>
       <h2 class="section-title">Share your feedback</h2>
-      <p class="section-sub">Loved your visit, or think we can do better? We read every message.</p>
+      <p class="section-sub">Tell us about the cafe or a product you tried — add a photo if you’d like. We read every message.</p>
     </div>
     <form class="form-card reveal reveal-delay-1" id="feedbackForm">
       <div class="form-alert" id="feedbackAlert"></div>
@@ -154,19 +154,46 @@
         <label>Email (optional)</label>
         <input type="email" name="email" id="fbEmail" placeholder="you@example.com">
       </div>
-      <div class="form-group">
-        <label>Rating</label>
-        <select name="rating" id="fbRating">
-          <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
-          <option value="4">⭐⭐⭐⭐ Good</option>
-          <option value="3">⭐⭐⭐ Average</option>
-          <option value="2">⭐⭐ Poor</option>
-          <option value="1">⭐ Very Poor</option>
-        </select>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Feedback About</label>
+          <select name="feedback_type" id="fbType">
+            <option value="CAFE">Cafe Experience</option>
+            <option value="PRODUCT">Product / Food &amp; Drink</option>
+            <option value="BOTH">Both Cafe &amp; Product</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Rating</label>
+          <select name="rating" id="fbRating">
+            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+            <option value="4">⭐⭐⭐⭐ Good</option>
+            <option value="3">⭐⭐⭐ Average</option>
+            <option value="2">⭐⭐ Poor</option>
+            <option value="1">⭐ Very Poor</option>
+          </select>
+        </div>
       </div>
       <div class="form-group">
         <label>Your Message</label>
-        <textarea name="message" id="fbMessage" placeholder="Tell us about your experience..." required></textarea>
+        <textarea name="message" id="fbMessage" placeholder="Tell us about your cafe visit or a product you tried..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Add a Photo <span class="text-muted" style="font-weight:500;">(optional)</span></label>
+        <div class="fb-upload" id="fbUploadZone">
+          <input type="file" id="fbImage" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+          <div class="fb-upload-idle" id="fbUploadIdle">
+            <span class="fb-upload-icon">📷</span>
+            <p><strong>Upload a product or cafe photo</strong></p>
+            <p class="hint">JPG, PNG or WEBP · max 3 MB</p>
+            <button type="button" class="btn btn-outline btn-sm" id="fbPickBtn">Choose Image</button>
+          </div>
+          <div class="fb-upload-preview" id="fbUploadPreview" hidden>
+            <img id="fbPreviewImg" alt="Selected preview">
+            <button type="button" class="fb-remove-img" id="fbRemoveImg" title="Remove photo" aria-label="Remove photo">×</button>
+            <p class="hint" id="fbFileName"></p>
+          </div>
+        </div>
       </div>
       <button type="submit" class="btn btn-primary btn-block" id="fbSubmitBtn">Submit Feedback</button>
     </form>

@@ -351,13 +351,19 @@ async function loadFeedbackAdmin() {
   try {
     const feedback = await api('/feedback/all', { auth: true });
     if (!feedback.length) { grid.innerHTML = `<p class="text-muted">No feedback yet.</p>`; return; }
-    grid.innerHTML = feedback.map(f => `
+    grid.innerHTML = feedback.map(f => {
+      const typeLabel = f.feedback_type === 'PRODUCT' ? 'Product' : f.feedback_type === 'BOTH' ? 'Cafe & Product' : 'Cafe';
+      return `
       <div class="card">
-        <div style="color:var(--gold-500);">${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}</div>
+        <div class="flex between" style="align-items:flex-start;gap:8px;">
+          <div style="color:var(--gold-500);">${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}</div>
+          <span class="fb-type-chip">${typeLabel}</span>
+        </div>
+        ${f.image ? `<img class="fb-review-photo" src="${f.image}" alt="Feedback photo" loading="lazy">` : ''}
         <p class="mt-10">"${f.message}"</p>
         <p class="text-muted mt-10" style="font-size:13px;">— ${f.name} ${f.email ? `(${f.email})` : ''} • ${new Date(f.created_at).toLocaleDateString()}</p>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   } catch (err) {
     grid.innerHTML = `<p class="text-muted">${err.message}</p>`;
   }

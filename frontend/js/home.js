@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTestimonials();
   const form = document.getElementById('feedbackForm');
   if (form) form.addEventListener('submit', submitFeedback);
+  setupFeedbackImagePicker();
 });
 
 async function loadFeaturedMenu() {
@@ -54,6 +55,13 @@ function menuCardHTML(item) {
     </div>`;
 }
 
+function feedbackTypeLabel(type) {
+  const t = String(type || 'CAFE').toUpperCase();
+  if (t === 'PRODUCT') return 'Product';
+  if (t === 'BOTH') return 'Cafe & Product';
+  return 'Cafe';
+}
+
 async function loadTestimonials() {
   const grid = document.getElementById('testimonialGrid');
   if (!grid) return;
@@ -65,7 +73,11 @@ async function loadTestimonials() {
     }
     grid.innerHTML = feedback.slice(0, 6).map(f => `
       <div class="testimonial-card reveal visible">
-        <div class="stars">${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}</div>
+        <div class="flex between" style="align-items:flex-start;gap:8px;">
+          <div class="stars">${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}</div>
+          <span class="fb-type-chip">${feedbackTypeLabel(f.feedback_type)}</span>
+        </div>
+        ${f.image ? `<img class="fb-review-photo" src="${escapeHTML(f.image)}" alt="Guest photo" loading="lazy">` : ''}
         <p>"${escapeHTML(f.message)}"</p>
         <div class="who">
           <div class="avatar-circle">${f.name.charAt(0).toUpperCase()}</div>
@@ -76,6 +88,57 @@ async function loadTestimonials() {
   } catch (err) {
     grid.innerHTML = `<p class="text-muted">Could not load reviews right now.</p>`;
   }
+}
+
+function setupFeedbackImagePicker() {
+  const input = document.getElementById('fbImage');
+  const pickBtn = document.getElementById('fbPickBtn');
+  const removeBtn = document.getElementById('fbRemoveImg');
+  const zone = document.getElementById('fbUploadZone');
+  if (!input || !pickBtn) return;
+
+  pickBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    input.click();
+  });
+  zone?.addEventListener('click', (e) => {
+    if (document.getElementById('fbUploadPreview') && !document.getElementById('fbUploadPreview').hidden) return;
+    if (e.target.closest('#fbUploadIdle') || e.target === zone) input.click();
+  });
+
+  input.addEventListener('change', () => {
+    const file = input.files && input.files[0];
+    if (!file) { clearFeedbackImage(); return; }
+    if (file.size > 3 * 1024 * 1024) {
+      toast('Please choose an image under 3 MB.', 'error');
+      clearFeedbackImage();
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('fbPreviewImg').src = reader.result;
+      document.getElementById('fbFileName').textContent = file.name;
+      document.getElementById('fbUploadIdle').hidden = true;
+      document.getElementById('fbUploadPreview').hidden = false;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  removeBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    clearFeedbackImage();
+  });
+}
+
+function clearFeedbackImage() {
+  const input = document.getElementById('fbImage');
+  if (input) input.value = '';
+  const preview = document.getElementById('fbUploadPreview');
+  const idle = document.getElementById('fbUploadIdle');
+  if (preview) preview.hidden = true;
+  if (idle) idle.hidden = false;
+  const img = document.getElementById('fbPreviewImg');
+  if (img) img.removeAttribute('src');
 }
 
 async function submitFeedback(e) {
@@ -89,6 +152,8 @@ async function submitFeedback(e) {
   const email = document.getElementById('fbEmail').value.trim();
   const rating = document.getElementById('fbRating').value;
   const message = document.getElementById('fbMessage').value.trim();
+  const feedbackType = document.getElementById('fbType').value;
+  const imageFile = document.getElementById('fbImage').files[0];
 
   if (!name || !message) {
     alertBox.className = 'form-alert error';
@@ -96,13 +161,22 @@ async function submitFeedback(e) {
     return;
   }
 
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('email', email);
+  fd.append('rating', rating);
+  fd.append('message', message);
+  fd.append('feedback_type', feedbackType);
+  if (imageFile) fd.append('image', imageFile);
+
   btn.disabled = true;
   btn.textContent = 'Sending...';
   try {
-    await api('/feedback', { method: 'POST', body: { name, email, rating, message }, auth: isLoggedIn() });
+    await api('/feedback', { method: 'POST', formData: fd, auth: isLoggedIn() });
     alertBox.className = 'form-alert success';
     alertBox.textContent = 'Thank you! Your feedback has been submitted.';
-    document.getElementById('feedbackForm').reset(); // clear form so it's ready to fill again
+    document.getElementById('feedbackForm').reset();
+    clearFeedbackImage();
     loadTestimonials();
   } catch (err) {
     alertBox.className = 'form-alert error';

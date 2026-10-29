@@ -59,6 +59,40 @@ router.get('/mine', requireAuth, async (req, res) => {
   }
 });
 
+// PUT /api/bookings/:id/cancel - customer cancels their own booking
+router.put('/:id/cancel', requireAuth, async (req, res) => {
+  try {
+    const bookingId = Number(req.params.id);
+    if (!bookingId) return res.status(400).json({ error: 'Invalid booking id.' });
+
+    const [rows] = await pool.query(
+      'SELECT id, status, user_id FROM bookings WHERE id = ? AND user_id = ?',
+      [bookingId, req.user.id]
+    );
+    if (!rows.length) {
+      return res.status(404).json({ error: 'Booking not found.' });
+    }
+
+    const booking = rows[0];
+    if (booking.status === 'CANCELLED') {
+      return res.status(400).json({ error: 'This booking is already cancelled.' });
+    }
+
+    await pool.query(
+      `UPDATE bookings SET status = 'CANCELLED' WHERE id = ? AND user_id = ?`,
+      [bookingId, req.user.id]
+    );
+
+    res.json({
+      message: 'Your booking has been cancelled. We hope to see you another time!',
+      status: 'CANCELLED'
+    });
+  } catch (err) {
+    console.error('Cancel booking error:', err.message);
+    res.status(500).json({ error: 'Could not cancel the booking. Please try again.' });
+  }
+});
+
 // ---------------------------------------------------------------
 // ADMIN
 // ---------------------------------------------------------------
