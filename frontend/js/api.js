@@ -5,21 +5,65 @@
 
 const API_BASE = '/api';
 
-function getToken() {
-  return localStorage.getItem('cp_token');
+/* Admin and customer sessions are stored separately so you can stay
+   logged in as both at once (e.g. admin dashboard in one tab, shop in another). */
+const SESSION_KEYS = {
+  admin: { token: 'cp_admin_token', user: 'cp_admin_user' },
+  customer: { token: 'cp_customer_token', user: 'cp_customer_user' }
+};
+
+function isAdminPage() {
+  const page = (location.pathname.split('/').pop() || '').toLowerCase();
+  return page === 'admin.html';
 }
-function setSession(token, user) {
-  localStorage.setItem('cp_token', token);
-  localStorage.setItem('cp_user', JSON.stringify(user));
+
+function roleFromUser(user) {
+  return String(user?.role || '').toUpperCase() === 'ADMIN' ? 'admin' : 'customer';
 }
-function clearSession() {
+
+/** Which session this page should use (admin.html → admin, everything else → customer). */
+function activeSessionRole() {
+  return isAdminPage() ? 'admin' : 'customer';
+}
+
+function migrateLegacySession() {
+  const oldToken = localStorage.getItem('cp_token');
+  const oldUserRaw = localStorage.getItem('cp_user');
+  if (!oldToken && !oldUserRaw) return;
+  try {
+    const user = oldUserRaw ? JSON.parse(oldUserRaw) : null;
+    const role = roleFromUser(user);
+    const keys = SESSION_KEYS[role];
+    if (oldToken && !localStorage.getItem(keys.token)) {
+      localStorage.setItem(keys.token, oldToken);
+    }
+    if (oldUserRaw && !localStorage.getItem(keys.user)) {
+      localStorage.setItem(keys.user, oldUserRaw);
+    }
+  } catch (e) { /* ignore corrupt legacy data */ }
   localStorage.removeItem('cp_token');
   localStorage.removeItem('cp_user');
 }
-function getUser() {
-  try { return JSON.parse(localStorage.getItem('cp_user')); } catch (e) { return null; }
+migrateLegacySession();
+
+function getToken(role = activeSessionRole()) {
+  return localStorage.getItem(SESSION_KEYS[role].token);
 }
-function isLoggedIn() { return !!getToken(); }
+function setSession(token, user) {
+  const role = roleFromUser(user);
+  const keys = SESSION_KEYS[role];
+  localStorage.setItem(keys.token, token);
+  localStorage.setItem(keys.user, JSON.stringify(user));
+}
+function clearSession(role = activeSessionRole()) {
+  const keys = SESSION_KEYS[role];
+  localStorage.removeItem(keys.token);
+  localStorage.removeItem(keys.user);
+}
+function getUser(role = activeSessionRole()) {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEYS[role].user)); } catch (e) { return null; }
+}
+function isLoggedIn(role = activeSessionRole()) { return !!getToken(role); }
 function isAdmin() {
   const u = getUser();
   return !!(u && String(u.role || '').toUpperCase() === 'ADMIN');
@@ -101,7 +145,7 @@ async function api(path, { method = 'GET', body, auth = false, formData = null }
 
   if (!res.ok) {
     if (res.status === 401 && auth) {
-      clearSession();
+      clearSession(activeSessionRole());
     }
     throw new Error(data.error || 'Something went wrong. Please try again.');
   }

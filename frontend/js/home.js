@@ -11,13 +11,10 @@ async function loadFeaturedMenu() {
   if (!grid) return;
   try {
     const items = await api('/menu');
-    // Prefer in-stock items for Fan Favourites, still show OOS if a category only has those
+    // Pick one highlight per category so Fan Favourites feels varied
     const byCategory = new Map();
     for (const item of items) {
-      const existing = byCategory.get(item.category);
-      if (!existing || (!Number(existing.is_available) && Number(item.is_available))) {
-        byCategory.set(item.category, item);
-      }
+      if (!byCategory.has(item.category)) byCategory.set(item.category, item);
     }
     const featured = [...byCategory.values()].slice(0, 4);
     const fallback = items.slice(0, 4);
@@ -29,12 +26,9 @@ async function loadFeaturedMenu() {
 }
 
 function menuCardHTML(item) {
-  const inStock = !!Number(item.is_available);
-  const payload = JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image, is_available: inStock }).replace(/'/g, '&apos;');
-
+  // Use "visible" so cards show immediately — they are injected after initScrollReveal runs
   return `
-    <div class="card menu-card reveal visible ${inStock ? '' : 'is-out-of-stock'}">
-      ${inStock ? '' : '<span class="oos-badge">Out of Stock</span>'}
+    <div class="card menu-card reveal visible">
       <img class="photo" src="${escapeHTML(item.image) || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80'}" alt="${escapeHTML(item.name)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80'">
       <div class="body-pad">
         <div class="flex between">
@@ -45,10 +39,8 @@ function menuCardHTML(item) {
         <div class="row menu-actions">
           <span class="price-tag">${formatMoney(item.price)}</span>
           <div class="menu-btns">
-            ${inStock
-              ? `<button type="button" class="btn btn-outline btn-sm" onclick='addToCart(${payload})'>Add</button>
-                 <button type="button" class="btn btn-primary btn-sm" onclick='orderNow(${payload})'>Order Now</button>`
-              : `<button type="button" class="btn btn-outline btn-sm" disabled>Unavailable</button>`}
+            <button type="button" class="btn btn-outline btn-sm" onclick='addToCart(${JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image }).replace(/'/g, "&apos;")})'>Add</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick='orderNow(${JSON.stringify({ id: item.id, name: item.name, price: Number(item.price), image: item.image }).replace(/'/g, "&apos;")})'>Order Now</button>
           </div>
         </div>
       </div>

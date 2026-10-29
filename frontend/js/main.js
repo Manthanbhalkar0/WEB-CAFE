@@ -33,31 +33,30 @@ function initNavbar() {
 function initAuthArea() {
   const area = document.getElementById('authArea');
   if (!area) return;
-  const user = getUser();
+  // Storefront always uses the customer session (admin session is separate).
+  const user = getUser('customer');
+  const adminLink = isLoggedIn('admin')
+    ? '<a href="admin.html" class="btn btn-outline btn-sm">Admin Panel</a>'
+    : '';
 
   if (!user) {
     area.innerHTML = `
       <a href="login.html" class="btn btn-outline btn-sm">Login</a>
       <a href="register.html" class="btn btn-primary btn-sm">Sign Up</a>
+      ${adminLink}
     `;
     return;
   }
 
-  if (String(user.role || '').toUpperCase() === 'ADMIN') {
-    area.innerHTML = `
-      <a href="admin.html" class="btn btn-primary btn-sm">Admin Panel</a>
-      <button class="btn btn-outline btn-sm" id="logoutBtn">Logout</button>
-    `;
-  } else {
-    area.innerHTML = `
-      <a href="my-orders.html" class="btn btn-outline btn-sm">My Orders</a>
-      <button class="btn btn-primary btn-sm" id="logoutBtn">Logout</button>
-    `;
-  }
+  area.innerHTML = `
+    <a href="my-orders.html" class="btn btn-outline btn-sm">My Orders</a>
+    ${adminLink}
+    <button class="btn btn-primary btn-sm" id="logoutBtn">Logout</button>
+  `;
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-      clearSession();
+      clearSession('customer');
       toast('Logged out successfully', 'success');
       setTimeout(() => (window.location.href = 'index.html'), 600);
     });
