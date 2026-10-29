@@ -59,17 +59,32 @@ router.post('/', optionalAuth, feedbackUpload, async (req, res) => {
     if (rating < 1 || rating > 5) rating = 5;
 
     const imagePath = req.file ? `/uploads/feedback/${req.file.filename}` : null;
-    const userId = req.user ? req.user.id : null;
+    let userId = req.user ? req.user.id : null;
+    const emailValue = (email || '').trim();
 
-    await pool.query(
-      `INSERT INTO feedback (user_id, name, email, rating, message, feedback_type, image)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [userId, name, (email || '').trim(), rating, message, feedbackType, imagePath]
-    );
+    try {
+      await pool.query(
+        `INSERT INTO feedback (user_id, name, email, rating, message, feedback_type, image)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [userId, name, emailValue, rating, message, feedbackType, imagePath]
+      );
+    } catch (insertErr) {
+      // Stale / deleted account in JWT — still accept the feedback as a guest
+      if (userId && insertErr.code === 'ER_NO_REFERENCED_ROW_2') {
+        userId = null;
+        await pool.query(
+          `INSERT INTO feedback (user_id, name, email, rating, message, feedback_type, image)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [userId, name, emailValue, rating, message, feedbackType, imagePath]
+        );
+      } else {
+        throw insertErr;
+      }
+    }
     res.status(201).json({ message: 'Thank you for your feedback!' });
   } catch (err) {
     if (req.file) fs.unlink(req.file.path, () => {});
-    console.error('Feedback error:', err.message);
+    console.error('Feedback error:', err.code || '', err.message);
     res.status(500).json({ error: 'Could not submit feedback right now.' });
   }
 });

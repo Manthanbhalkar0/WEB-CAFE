@@ -10,6 +10,7 @@ const bookingRoutes = require('./routes/bookings');
 const orderRoutes = require('./routes/orders');
 const feedbackRoutes = require('./routes/feedback');
 const adminRoutes = require('./routes/admin');
+const { ensureFeedbackSchema } = require('./utils/migrate');
 
 const app = express();
 
@@ -69,7 +70,20 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`\n🍵 Cafe Point server running at http://localhost:${PORT}`);
-  console.log(`   Admin dashboard: http://localhost:${PORT}/admin.html\n`);
-});
+
+async function start() {
+  try {
+    await ensureFeedbackSchema();
+  } catch (err) {
+    console.error('❌ Could not prepare feedback table:', err.message);
+    console.error('   Run `npm run seed` once, then start the server again.');
+    process.exit(1);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`\n🍵 Cafe Point server running at http://localhost:${PORT}`);
+    console.log(`   Admin dashboard: http://localhost:${PORT}/admin.html\n`);
+  });
+}
+
+start();
