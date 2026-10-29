@@ -17,8 +17,11 @@ async function seed() {
     port: process.env.DB_PORT || 3306,
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
+    ssl: {
+        rejectUnauthorized: false
+    },
     multipleStatements: true
-  });
+});
 
   const schemaPath = path.join(__dirname, '..', 'schema.sql');
   const schemaSql = fs.readFileSync(schemaPath, 'utf8');
